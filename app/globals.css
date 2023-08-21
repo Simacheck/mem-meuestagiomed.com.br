@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* As cores devem ser baseadas em sistema HSL */ 
+@layer base {
+  :root {
+    --background: 22 0% 100%;
+
+    --primary: 205 86% 44%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 179 47% 42%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+
+    --primaryEdit:  205 85% 72%;
+  }
+
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
