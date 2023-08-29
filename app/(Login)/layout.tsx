@@ -24,26 +24,6 @@ export default function HomeRootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Menubar>
-          <CentralizerContainer>
-            <h1>LOGO COMPONENT</h1>
-            <div className="hidden md:flex space-x-4 ">
-              {MenuItensHome.map((item) => (
-                <Link
-                  key={item.route}
-                  href={item.route}
-                  className=" transition duration-500 ease-in-out border-b-4 border-transparent hover:border-primary"
-                >
-                  {item.item}
-                </Link>
-              ))}
-            </div>
-            <div className="hidden md:flex">
-              <LoginList />
-            </div>
-            <HamburguerMenu />
-          </CentralizerContainer>
-        </Menubar>
         {children}
       </body>
     </html>

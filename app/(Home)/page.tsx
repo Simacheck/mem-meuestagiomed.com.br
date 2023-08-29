@@ -2,15 +2,17 @@ import { CentralizerContainer } from "@/components/memComponents/CentralizerCont
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import { ProfileForm } from "./Form";
+import { Footer } from "@/components/memComponents/footer";
 
 export default function Home() {
   return (
     <>
-      <div className="bg-primary h-[50vh] min-h-[400px] bg-[url('/consult.jpeg')] bg-left bg-cover bg-no-repeat brightness-90">
+      <div className="bg-primary h-[50vh] min-h-[400px] bg-[url('/consult.jpeg')] bg-left bg-cover bg-no-repeat ">
         <div className="h-full w-full backdrop-blur-sm ">
-          <CentralizerContainer>
-            <div>
-              <h1 className="text-4xl color-background">
+          <CentralizerContainer outhers="brightness-100">
+            <div className="bg-primaryEdit">
+              <h1 className="text-4xl font-semibold">
                 Bem vindo ao MeuEstágioMed
               </h1>
               <h3 className="text-xl">
@@ -22,7 +24,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="pt-4 bg-[linear-gradient(175deg,_#ffffff_70%,_#7bc0f4_30%)]">
+      <div className="pt-4 px-2 bg-[linear-gradient(175deg,_#ffffff_70%,_#7bc0f4_30%)]">
         <CentralizerContainer>
           <h2 className="text-2xl font-bold">Como funciona:</h2>
         </CentralizerContainer>
@@ -138,9 +140,9 @@ export default function Home() {
           </Card>
         </CentralizerContainer>
       </div>
-      <div className="pt-4 bg-primaryEdit">
+      <div className="pt-4 px-2 bg-primaryEdit">
         <CentralizerContainer>
-          <h2 className="text-2xl font-bold">Parceiros:</h2>
+          <h2 className="text-2xl font-bold text-white">Parceiros:</h2>
         </CentralizerContainer>
         <CentralizerContainer justify="justify-around" outhers="py-4">
           <div className="conteiner bg-background rounded-xl w-[150px] h-[130px] flex items-center justify-center">
@@ -164,11 +166,14 @@ export default function Home() {
         </CentralizerContainer>
       </div>
 
-      <div className="pt-4 bg-[linear-gradient(175deg,_#7bc0f4_70%,_#ffffff_30%)]">
+      <div className="pt-4 px-2 bg-[linear-gradient(175deg,_#7bc0f4_70%,_#ffffff_30%)]">
         <CentralizerContainer>
-          <h2 className="text-2xl font-bold">Quem somos:</h2>
+          <h2 className="text-2xl font-bold text-white">Quem somos:</h2>
         </CentralizerContainer>
-        <CentralizerContainer justify="justify-around" outhers="py-4">
+        <CentralizerContainer
+          justify="justify-around"
+          outhers="py-4 flex-wrap gap-2"
+        >
           <Card className="conteiner bg-background border rounded-xl shadow-md p-4 ">
             <Image
               src={"/modelo.jpg"}
@@ -227,6 +232,17 @@ export default function Home() {
           </Card>
         </CentralizerContainer>
       </div>
+
+      <div className="pt-4 px-2">
+        <CentralizerContainer>
+          <h2 className="text-2xl font-bold">Fale Conosco:</h2>
+        </CentralizerContainer>
+        <CentralizerContainer outhers="w-full md:w-[40rem]">
+          <ProfileForm />
+        </CentralizerContainer>
+      </div>
+
+      <Footer />
     </>
   );
 }
