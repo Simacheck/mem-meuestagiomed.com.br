@@ -23,12 +23,12 @@ const Menubar = React.forwardRef<
   <MenubarPrimitive.Root
     ref={ref}
     className={cn(
-      "flex h-20 items-center space-x-1 rounded-md  p-1",
+      "flex w-full h-20 items-center space-x-1 rounded-md  p-1 fixed top-0 z-30 z-30 bg-white transition-all shadow-md",
       className
-      )}
-      {...props}
-      />
-))
+    )}
+    {...props}
+  />
+));
 Menubar.displayName = MenubarPrimitive.Root.displayName
 
 const MenubarTrigger = React.forwardRef<
