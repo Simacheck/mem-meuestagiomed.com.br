@@ -5,7 +5,7 @@ import { Inter } from 'next/font/google'
 import { CentralizerContainer } from '@/components/memComponents/CentralizerContainer'
 import Link from 'next/link'
 import { MenuItensHome } from '@/utils/menuitens'
-import { Menu } from 'lucide-react'
+import Image from "next/image";
 import { HamburguerMenu } from '@/components/memComponents/HomeNav/MenuHamburguer'
 import { LoginList } from '@/components/memComponents/HomeNav/LoginList'
 
@@ -26,7 +26,9 @@ export default function HomeRootLayout({
       <body className={inter.className}>
         <Menubar>
           <CentralizerContainer>
-            <h1>LOGO COMPONENT</h1>
+            <div>
+              <Image src='/loggo.png' alt='logo' height={50} width={120} />
+            </div>
             <div className="hidden md:flex space-x-4 ">
               {MenuItensHome.map((item) => (
                 <Link

@@ -7,21 +7,22 @@ import { Footer } from "@/components/memComponents/footer";
 import { StartAnimation } from "@/components/memComponents/ScrollAnimation";
 import { useMemo } from "react";
 import getScrollAnimation from "@/utils/getScrollAnimation";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export default function Home() {
   const scrollAnimation = useMemo(() => getScrollAnimation(), []);
-  
+
   return (
     <>
       <StartAnimation>
-        <div className="h-100 min-h-[400px]  pt-32">
+        <div className="h-100 min-h-[400px] pt-20 md:pt-32 px-2">
           <div className="h-full w-full">
             <div className=" max-w-screen-xl flex m-auto w-full h-full items-center flex-wrap">
-              <div className="w-50 max-w-[600px]">
-                <h1 className="text-4xl w-3/4 py-4">
+              <div className="w-50 max-w-[600px] pb-4 md:pb-0">
+                <h1 className="text-3xl w-3/4 py-4 md:text-4xl">
                   Bem vindo ao <strong>MeuEstágioMed</strong>
                 </h1>
-                <h3 className="text-xl w-3/4">
+                <h3 className="text-md md:text-xl w:1/2 md:w-3/4">
                   Somos a ponte entre médicos dispostos a ensinar e alunos
                   disponíveis para aprender.
                 </h3>
@@ -34,7 +35,7 @@ export default function Home() {
       </StartAnimation>
 
       <StartAnimation>
-        <div className="pt-4 px-2 bg-[linear-gradient(175deg,_#ffffff_70%,_#7bc0f4_30%)]">
+        <div className="pt-6 md:pt-4 px-2 bg-[linear-gradient(175deg,_#ffffff_70%,_#7bc0f4_30%)] text-xs md:text-base">
           <CentralizerContainer>
             <h2 className="text-2xl font-bold">Como funciona:</h2>
           </CentralizerContainer>
@@ -45,106 +46,94 @@ export default function Home() {
             <Card className="border rounded-xl shadow-md bg-background p-4">
               <div className="flex-col ">
                 <h3 className="text-xl">Para Médicos</h3>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">01.</span>{" "}
-                    Cadastre-se
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">01.</span>{" "}
+                  <h4 className="px-2">Cadastre-se</h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">02.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">02.</span>{" "}
+                  <h4 className="px-2">
                     Seus dados serão conferidos pela nossa equipe interna
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">03.</span>{" "}
-                    Crie o estágio disponível
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">03.</span>{" "}
+                  <h4 className="px-2">Crie o estágio disponível</h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">04.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">04.</span>{" "}
+                  <h4 className="px-2">
                     Nossa Equipe fará uma validação da vaga
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">05.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">05.</span>{" "}
+                  <h4 className="px-2">
                     A vaga será disponibilizada para os estudantes disponíveis
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">06.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">06.</span>{" "}
+                  <h4 className="px-2">
                     Os estudantes se candidataram para o estágio
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">07.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">07.</span>{" "}
+                  <h4 className="px-2">
                     Você poderá selecionar seu estágiario
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">08.</span>{" "}
-                    Agora é só esperar o estágio começar
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">08.</span>{" "}
+                  <h4 className="px-2">Agora é só esperar o estágio começar</h4>
                 </div>
               </div>
             </Card>
             <Card className="border rounded-xl shadow-md bg-background p-4">
               <div className="flex-col ">
                 <h3 className="text-xl">Para Estudantes</h3>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">01.</span>{" "}
-                    Cadastre-se
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">01.</span>{" "}
+                  <h4 className="px-2">Cadastre-se</h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">02.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">02.</span>{" "}
+                  <h4 className="px-2">
                     Seus dados serão conferidos pela nossa equipe interna
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">03.</span>{" "}
-                    Crie o estágio disponível
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">03.</span>{" "}
+                  <h4 className="px-2">Crie o estágio disponível</h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">04.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">04.</span>{" "}
+                  <h4 className="px-2">
                     Nossa Equipe fará uma validação da vaga
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">05.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">05.</span>{" "}
+                  <h4 className="px-2">
                     A vaga será disponibilizada para os estudantes disponíveis
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">06.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">06.</span>{" "}
+                  <h4 className="px-2">
                     Os estudantes se candidataram para o estágio
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">07.</span>{" "}
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">07.</span>{" "}
+                  <h4 className="px-2">
                     Você poderá selecionar seu estágiario
                   </h4>
                 </div>
-                <div className="pt-6 ml-2">
-                  <h4>
-                    <span className="bg-primaryEdit p-2 rounded-full">08.</span>{" "}
-                    Agora é só esperar o estágio começar
-                  </h4>
+                <div className="flex items-center pt-6 ml-2">
+                  <span className="bg-primaryEdit p-2 rounded-full">08.</span>{" "}
+                  <h4 className="px-2">Agora é só esperar o estágio começar</h4>
                 </div>
               </div>
             </Card>
@@ -153,7 +142,7 @@ export default function Home() {
       </StartAnimation>
 
       <StartAnimation>
-        <div className="pt-4 px-2 bg-primaryEdit">
+        <div className="pt-4 px-2 bg-primaryEdit text-xs md:text-base">
           <CentralizerContainer>
             <h2 className="text-2xl font-bold text-white">Parceiros:</h2>
           </CentralizerContainer>
@@ -187,7 +176,7 @@ export default function Home() {
           </CentralizerContainer>
           <CentralizerContainer
             justify="justify-around"
-            outhers="py-4 flex-wrap gap-2"
+            outhers="py-4 gap-2 overflow-auto"
           >
             <Card className="conteiner bg-background border rounded-xl shadow-md p-4 ">
               <Image
@@ -259,7 +248,7 @@ export default function Home() {
           </CentralizerContainer>
         </div>
       </StartAnimation>
-      
+
       <Footer />
     </>
   );
