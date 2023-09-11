@@ -1,3 +1,4 @@
+import { Checkbox } from "@/components/ui/checkbox"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 
@@ -5,19 +6,14 @@ import { Input } from "../ui/input";
 interface Props {
   formControl: any;
   name: string;
-  label?: string;
-  type?: string;
-  placeholder?: string;
+  label?: string | any;
   description?: string;
   className?: string;
 }
-export const InputForm = ({
+export const InputCheckboxForm = ({
   formControl,
-  type,
   name,
   label,
-  placeholder,
-  description,
   className,
 }: Props) => {
 
@@ -27,15 +23,12 @@ export const InputForm = ({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          {label && <FormLabel htmlFor={name}>{label}</FormLabel>}
           <FormControl>
-            <Input
-              type={type ? type : "text"}
-              placeholder={placeholder && placeholder}
-              {...field}
-            />
+            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
           </FormControl>
-          {description && <FormDescription>{description}</FormDescription>}
+          <div className="space-y-1 leading-none">
+            <FormLabel>{label}</FormLabel>
+          </div>
           <FormMessage />
         </FormItem>
       )}

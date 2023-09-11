@@ -8,6 +8,7 @@ import { MenuItensHome } from '@/utils/menuitens'
 import { Menu } from 'lucide-react'
 import { HamburguerMenu } from '@/components/memComponents/HomeNav/MenuHamburguer'
 import { LoginList } from '@/components/memComponents/HomeNav/LoginList'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default function HomeRootLayout({
     <html lang="en">
       <body className={inter.className}>
         {children}
+        <Toaster />
       </body>
     </html>
   );

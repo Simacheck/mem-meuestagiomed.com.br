@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserTypes } from "./UserType";
-import { Signup } from "@/components/memComponents/Forms/Signup";
+import { MedicoSignup } from "@/components/memComponents/Forms/Signup/MedicoSignup";
 
 
 export default function NewSteps() {
@@ -25,7 +25,7 @@ export default function NewSteps() {
     {
       icon: "2",
       label: "Preencha seus dados",
-      component: <Signup />,
+      component: <MedicoSignup userType={userType} />,
       status: 0,
     },
     {
