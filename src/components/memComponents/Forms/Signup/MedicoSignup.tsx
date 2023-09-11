@@ -8,11 +8,6 @@ import * as z from "zod";
 import { InputForm } from "../../InputForm";
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -26,7 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 
-const convertToBase64 = (file: File): Promise<string> => {
+const convertToBase64 = (file: any ): Promise<string> => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
 
@@ -52,7 +47,6 @@ const formSchema = z
     password: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
-    picture: z.instanceof(File),
     confirmPassword: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
@@ -75,7 +69,7 @@ export function MedicoSignup({ userType }: Props) {
   const [base64error, setBase64Error] = useState<boolean>(false)
   const route = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
-    //resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
