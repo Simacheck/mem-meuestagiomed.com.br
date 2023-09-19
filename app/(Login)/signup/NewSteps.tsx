@@ -15,7 +15,11 @@ export default function NewSteps() {
     setSelectedTab(allSteps[stepNumber ? stepNumber : 0]);
   }
 
-  let allSteps = [
+ function handleUseSelectedTab(number: number) {
+   setSelectedTab(allSteps[number]);
+ }
+
+  const allSteps = [
     {
       icon: "1",
       label: "Selecione seu tipo de Usuário",
@@ -25,7 +29,12 @@ export default function NewSteps() {
     {
       icon: "2",
       label: "Preencha seus dados",
-      component: <MedicoSignup userType={userType} />,
+      component: (
+        <MedicoSignup
+          handleUseSelectedTab={handleUseSelectedTab}
+          userType={userType}
+        />
+      ),
       status: 0,
     },
     {
@@ -37,6 +46,11 @@ export default function NewSteps() {
   ];
 
   const [selectedTab, setSelectedTab] = useState(allSteps[0]);
+  console.log(selectedTab, 'selectedTab')
+
+
+  
+  
  
   return (
     <>

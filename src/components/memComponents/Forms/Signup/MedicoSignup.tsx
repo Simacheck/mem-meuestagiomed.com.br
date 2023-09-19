@@ -12,14 +12,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { InputMaskForm } from "../../InputMaskForm";
-import { InputDateForm } from "../../InputDateForm";
 import { InputSelectForm } from "../../InputSelectForm";
 import { statesBR } from "@/utils/states";
 import { useToast } from "@/components/ui/use-toast";
 import { InputCheckboxForm } from "../../InputCheckBoxForm";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { InputDateFormTwo } from "../../InputDateForm";
+import "../../../react-datepicker.css";
 
 const convertToBase64 = (file: any ): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -62,12 +63,13 @@ const formSchema = z
 
 interface Props {
   userType: number;
+  handleUseSelectedTab: (number: number) => void;
 }
 
-export function MedicoSignup({ userType }: Props) {
+export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
   const { toast } = useToast();
   const [base64, setBase64] = useState<string | null>(null);
-  const [base64error, setBase64Error] = useState<boolean>(false)
+  const [base64error, setBase64Error] = useState<boolean>(false);
   const route = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,22 +95,22 @@ export function MedicoSignup({ userType }: Props) {
   };
 
   const onSubmit = async (values: any) => {
-    if (base64 === null){
-      setBase64Error(true)
+    if (base64 === null) {
+      setBase64Error(true);
 
-      return
-    } else (
-      setBase64Error(false)
-    )
+      return;
+    } else setBase64Error(false);
 
-    const newValues = {...values, picture: base64}
-
+    const newValues = { ...values, picture: base64 };
+    console.log(newValues)
     toast({
       title: "Sucesso!",
       description:
         "Seu cadastro foi recebido, iremos enviar um e-mail para confirmação",
       icon: "sucess",
     });
+
+    setTimeout(() => handleUseSelectedTab(2), 1000);
   };
 
   return (
@@ -123,7 +125,7 @@ export function MedicoSignup({ userType }: Props) {
             >
               <ScrollArea className="h-[350px] overflow-auto">
                 <Link
-                  href={"/signup"}
+                  href={"/signin"}
                   className="underline text-primary text-sm"
                 >
                   {" "}
@@ -150,7 +152,8 @@ export function MedicoSignup({ userType }: Props) {
                 />
 
                 <div className=" py-2 flex gap-2 w-full">
-                  <InputDateForm
+                  
+                  <InputDateFormTwo
                     className="w-full max-w-[50%]"
                     formControl={form.control}
                     name={"birthday"}
@@ -164,6 +167,7 @@ export function MedicoSignup({ userType }: Props) {
                     placeholder="Digite seu CPF"
                   />
                 </div>
+
                 <div className=" py-2 flex gap-2 w-full">
                   <InputForm
                     formControl={form.control}
@@ -180,13 +184,6 @@ export function MedicoSignup({ userType }: Props) {
                   />
                 </div>
 
-                {/*<InputForm
-                  label="Escolha uma foto de perfil"
-                  formControl={form.control}
-                  name={"picture"}
-                  type="file"
-                  className="py-2"
-  />*/}
                 <div>
                   <Input
                     name={"picture"}
