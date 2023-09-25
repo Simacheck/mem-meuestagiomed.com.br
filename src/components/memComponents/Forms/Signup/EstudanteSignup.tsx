@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { InputDateFormTwo } from "../../InputDateForm";
 import "../../../react-datepicker.css";
+import { Label } from "@/components/ui/label";
 
 const convertToBase64 = (file: any ): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -44,8 +45,6 @@ const formSchema = z
     birthday: z.date({
       required_error: "É necessário uma data válida",
     }),
-    crm: z.string({ required_error: "É necessário um CRM" }),
-    ufCrm: z.string({ required_error: "É necessário um Estado" }),
     password: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
@@ -62,14 +61,24 @@ const formSchema = z
   });
 
 interface Props {
-  userType: number | null | undefined;
+  userType: number;
   handleUseSelectedTab: (number: number) => void;
 }
 
-export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
+interface IBase {
+  picture: string;
+  registration: string;
+}
+
+interface IBaseError {
+  picture: boolean;
+  registration: boolean;
+}
+
+export function EstudanteSignup({ userType, handleUseSelectedTab }: Props) {
   const { toast } = useToast();
-  const [base64, setBase64] = useState<string | null>(null);
-  const [base64error, setBase64Error] = useState<boolean>(false);
+  const [base64, setBase64] = useState<IBase | any>(null);
+  const [base64error, setBase64Error] = useState<IBaseError>({picture: false, registration: false});
   const route = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +86,6 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
       email: "",
     },
   });
-  console.log(userType)
 
   const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
@@ -89,18 +97,34 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
 
     try {
       const base64File = await convertToBase64(file);
-      setBase64(base64File);
+      
+      if( target.name === 'picture' ){
+        const obj = {...base64, picture: base64File}
+        setBase64(obj);
+      } else {
+        const obj = { ...base64, registration: base64File };
+        setBase64(obj);
+      }
     } catch (e) {
       console.log(e);
     }
   };
 
-  const onSubmit = async (values: any) => {
-    if (base64 === null) {
-      setBase64Error(true);
+  console.log(base64)
 
+  const onSubmit = async (values: any) => {
+    if (!base64.picture || !base64.picture) {
+      setBase64Error({
+        picture: !!base64.picture,
+        registration: !!base64.registration,
+      });
+
+      
+      
       return;
-    } else setBase64Error(false);
+    } 
+
+    setBase64Error({ picture: false, registration: false });
 
     const newValues = { ...values, picture: base64 };
     console.log(newValues)
@@ -153,7 +177,6 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
                 />
 
                 <div className=" py-2 flex gap-2 w-full">
-                  
                   <InputDateFormTwo
                     className="w-full max-w-[50%]"
                     formControl={form.control}
@@ -169,35 +192,38 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
                   />
                 </div>
 
-                <div className=" py-2 flex gap-2 w-full">
-                  <InputForm
-                    formControl={form.control}
-                    name={"crm"}
-                    type="number"
-                    placeholder="Digite seu CRM"
-                    className="w-full max-w-[50%]"
-                  />
-                  <InputSelectForm
-                    formControl={form.control}
-                    name={"ufCrm"}
-                    className="w-full max-w-[50%]"
-                    itens={statesBR}
-                  />
-                </div>
-
-                <div>
+                <div className="py-2">
+                  <Label>Foto de Perfil:</Label>
                   <Input
                     name={"picture"}
                     type="file"
                     accept="image/*"
                     onChange={handleChangeInput}
                   />
-                  {base64error && (
+                  {base64error.picture && (
                     <p
                       id={"picture"}
                       className="text-sm font-medium text-red-500 mx-0"
                     >
-                      É necessário ter uma foto
+                      É necessário enviar uma foto
+                    </p>
+                  )}
+                </div>
+
+                <div className="py-2">
+                  <Label>Comprovante de Matrícula:</Label>
+                  <Input
+                    name={"registration"}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChangeInput}
+                  />
+                  {base64error.registration && (
+                    <p
+                      id={"registration"}
+                      className="text-sm font-medium text-red-500 mx-0"
+                    >
+                      É necessário enviar um comprovante
                     </p>
                   )}
                 </div>

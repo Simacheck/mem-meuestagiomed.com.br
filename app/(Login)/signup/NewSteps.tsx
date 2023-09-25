@@ -1,21 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserTypes } from "./UserType";
 import { MedicoSignup } from "@/components/memComponents/Forms/Signup/MedicoSignup";
+import { EstudanteSignup } from "@/components/memComponents/Forms/Signup/EstudanteSignup";
+import { ConfirmationLogin } from "@/components/memComponents/Forms/ConfirmationAccount";
 
 
 export default function NewSteps() {
-  const [userType, setUserType] = useState<number>(0)
+  const [userType, setUserType] = useState<number | null>()
+  const [tela, setTela] = useState<number>(0)
 
-  const handleChangeUserType = (id?: number, stepNumber?: number) => {
-    setUserType(id ? id : 0)
+  const handleChangeUserType = (id: number, stepNumber?: number) => {
 
-    setSelectedTab(allSteps[stepNumber ? stepNumber : 0]);
+    setUserType(id);
+    setTela(stepNumber ? stepNumber : 0);
   }
 
+  useEffect( () => {
+    handleUseSelectedTab(tela)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tela])
+
  function handleUseSelectedTab(number: number) {
+  
    setSelectedTab(allSteps[number]);
  }
 
@@ -29,29 +38,30 @@ export default function NewSteps() {
     {
       icon: "2",
       label: "Preencha seus dados",
-      component: (
-        <MedicoSignup
-          handleUseSelectedTab={handleUseSelectedTab}
-          userType={userType}
-        />
-      ),
+      component:
+        userType === 1 ? (
+          <EstudanteSignup
+            handleUseSelectedTab={handleUseSelectedTab}
+            userType={userType}
+          />
+        ) : (
+          <MedicoSignup
+            handleUseSelectedTab={handleUseSelectedTab}
+            userType={userType}
+          />
+        ),
       status: 0,
     },
     {
       icon: "3",
       label: "Confirme seu cadastro",
-      component: <>abasdfasdcde</>,
+      component: <ConfirmationLogin />,
       status: 0,
     },
   ];
 
   const [selectedTab, setSelectedTab] = useState(allSteps[0]);
-  console.log(selectedTab, 'selectedTab')
 
-
-  
-  
- 
   return (
     <>
       <>

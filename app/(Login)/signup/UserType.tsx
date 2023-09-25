@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 
 interface Props {
-  handleChangeUserType: (id?: number, stepNumber?: number) => void;
+  handleChangeUserType: (id: number, stepNumber?: number) => void;
 }
 
 const users = [

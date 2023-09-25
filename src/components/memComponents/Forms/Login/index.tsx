@@ -13,6 +13,7 @@ import {
   Form,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -48,13 +49,20 @@ export function LoginForm() {
                 placeholder={"Email"}
                 name="email"
               />
-              <InputForm
-                formControl={form.control}
-                type={"password"}
-                className="mb-4"
-                placeholder={"Senha"}
-                name="password"
-              />
+              <div className="mb-4">
+                <InputForm
+                  formControl={form.control}
+                  type={"password"}
+                  placeholder={"Senha"}
+                  name="password"
+                />
+                <div className="w-full text-right">
+                  <Link className="text-xs underline" href={"/recover"}>
+                    {" "}
+                    Esqueci minha senha
+                  </Link>
+                </div>
+              </div>
 
               <Button className="w-full ">Entrar</Button>
             </form>
@@ -73,7 +81,9 @@ export function LoginForm() {
           </div>
         </div>
 
-        <Button className="w-full" onClick={() => router.push('/signup')}>Criar Conta</Button>
+        <Button className="w-full" onClick={() => router.push("/signup")}>
+          Criar Conta
+        </Button>
       </CardFooter>
     </>
   );
