@@ -5,3 +5,9 @@ export const MenuItensHome = [
   { item: "Fale Conosco", route: "/" },
 ];
 
+export const ManuItensAppEstudante = [
+  { item: "Oportunidades", route: "/" },
+  { item: "Minhas Inscrições", route: "/" },
+  { item: "Currículo", route: "/" },
+];
+

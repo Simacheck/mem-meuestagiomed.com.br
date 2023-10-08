@@ -14,23 +14,42 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
-  email: z.string().email({
+  email: z.string({ required_error: "É necessário um e-mail" }).email({
     message: "É necessário um e-mail válido.",
   }),
-  password: z.string(),
+  password: z.string({ required_error: "É necessário uma senha." }),
 });
+
+interface ValuesI {
+  email: string;
+  password: string;
+}
 
 
 export function LoginForm() {
   const router = useRouter()
+    const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (values: any) => {
-    console.log(values);
+  const onSubmit = (values: ValuesI) => {
+
+    if(values.email === 'mem@mem.com.br' && values.password === 'senha12') {
+      router.push('/app')
+      return
+    } 
+    toast({
+      title: "Email ou senha incorretos!",
+      description: `${JSON.stringify(values)}`,
+      icon: "alert",
+    });
+    return;
+
+    
   };
 
   return (

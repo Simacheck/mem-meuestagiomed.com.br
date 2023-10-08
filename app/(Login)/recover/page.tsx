@@ -5,12 +5,9 @@ export default function RecoverPass() {
   return (
     <div className="h-screen flex align-center ">
       <div className="m-auto">
-        <Card className="max-w-md w-full min-w-fit">
-          <CardHeader className="py-6">
+        <Card className="max-w-md w-[100%] min-w-[360px] m-auto">
+          <CardHeader className="py-2 ">
             <CardTitle className="text-2xl">Recupere sua senha.</CardTitle>
-            <CardDescription>
-             Preencha os dados abaixo:
-            </CardDescription>
           </CardHeader>
           <RecoverEmailForm />
         </Card>
