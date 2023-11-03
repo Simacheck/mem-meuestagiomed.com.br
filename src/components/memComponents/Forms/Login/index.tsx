@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
+import { api } from "@/utils/services";
 
 const formSchema = z.object({
   email: z.string({ required_error: "É necessário um e-mail" }).email({
@@ -39,7 +40,8 @@ export function LoginForm() {
   const onSubmit = (values: ValuesI) => {
 
     if(values.email === 'mem@mem.com.br' && values.password === 'senha12') {
-      router.push('/app')
+      getBosses(values)
+
       return
     } 
     toast({
@@ -48,9 +50,19 @@ export function LoginForm() {
       icon: "alert",
     });
     return;
-
-    
   };
+
+  async function getBosses(values:any) {
+    try {
+        const {data} = await api.post(`/login`, values)
+        console.log(data)
+       // router.push('/app')
+        
+        return
+    } catch (e) {
+        console.log(e)
+    }
+}
 
   return (
     <>

@@ -1,0 +1,51 @@
+
+
+POST /login 
+    email: string
+    password: string
+
+POST /recuperarSenha
+    email: string
+
+POST /criarConta/medico
+    nome: string
+    email: string
+    telefone: string
+    dataAniversario: string?
+    cpf: string;
+    crm: string;
+    estadoCRM: string;
+    foto: string;
+    senha: string;
+    termosUso: boolean;
+
+POST /criarConta/estudante
+    nome: string
+    email: string
+    telefone: string
+    dataAniversario: string?
+    cpf: string;
+    comprovanteMatricula: string;
+    foto: string;
+    senha: string;
+    termosUso: boolean;
+
+    POST /criarConta/validacao
+        codigo: string;
+
+    POST /criarConta/solicitarNovoCodigo
+        email: string;
+
+
+GET /list-oportunidades 
+    PARAMS: {filters(especialidade, data, semestre minimo)}
+    RESPOSTA:
+        ARRAY DE EstagioSchema
+
+GET /estagio/[ID]
+    resposta:
+        EstagioDetalhesSchema
+
+    
+POST /estagio/[id]
+    userId: string;

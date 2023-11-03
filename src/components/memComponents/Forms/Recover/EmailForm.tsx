@@ -76,16 +76,21 @@ export function RecoverEmailForm() {
           </div>
         ) : (
           <div className="pb-4 text-center">
-            <p>
-              <span className="font-bold">Excelente!</span>
+            <div>
+              <p>
+                <span className="font-bold">Excelente!</span>
+              
               <br />
               Um e-mail foi enviado para <span className="font-bold">{text}</span>, verifique os
               próximos passos por lá.
               <br />
+              </p>
               <div className="py-2">
-                <span className="">Você será redirecionado em 5 segundos.</span>
+                <p>
+                  <span className="">Você será redirecionado em 5 segundos.</span>
+                </p>
               </div>
-            </p>
+            </div>
           </div>
         )}
       </CardContent>

@@ -17,6 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "../ui/badge";
 
 interface ValueProps {
   value: string;
@@ -26,10 +27,10 @@ interface ValueProps {
 interface ComponenteProps {
   itens: ValueProps[];
   placeholder: string;
-  width: string;
+  disable?: boolean;
 }
 
-export function SelectFilter({ itens, placeholder, width }: ComponenteProps) {
+export function SelectFilter({ itens, placeholder, disable }: ComponenteProps) {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState<ValueProps[] | any>();
 
@@ -51,7 +52,7 @@ export function SelectFilter({ itens, placeholder, width }: ComponenteProps) {
               : values?.map(
                   (value: ValueProps) =>{
                     console.log(value)
-                    return `${value.label} ${values?.length > 1 ? "," : ""}`}
+                    return <Badge key={value.value} className="mr-1">{value.label}</Badge>}
                 )
             : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

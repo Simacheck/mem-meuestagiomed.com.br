@@ -6,8 +6,13 @@ export const MenuItensHome = [
 ];
 
 export const ManuItensAppEstudante = [
-  { item: "Oportunidades", route: "/" },
-  { item: "Minhas Inscrições", route: "/" },
-  { item: "Currículo", route: "/" },
+  { item: "Oportunidades", route: "/app" },
+  { item: "Minhas Inscrições", route: "/app/inscricoes" },
+  { item: "Currículo", route: "/app/curriculo" },
+];
+
+export const ManuItensAppMedico = [
+  { item: "Painel", route: "/app" },
+  { item: "Criar Estágio", route: "/app/inscricoes" },
 ];
 

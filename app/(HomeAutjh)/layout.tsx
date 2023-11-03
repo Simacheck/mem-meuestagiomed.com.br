@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { CentralizerContainer } from '@/components/memComponents/CentralizerContainer'
 import Link from 'next/link'
-import { ManuItensAppEstudante, MenuItensHome } from '@/utils/menuitens'
+import { ManuItensAppEstudante, ManuItensAppMedico, MenuItensHome } from '@/utils/menuitens'
 import { HamburguerMenu } from '@/components/memComponents/HomeNav/MenuHamburguer'
 import { LoginList } from '@/components/memComponents/HomeNav/LoginList'
 import Image from "next/image";
@@ -23,6 +23,7 @@ export default function HomeRootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const userType = 'medico'
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
@@ -33,14 +34,23 @@ export default function HomeRootLayout({
             </div>
             <div className="flex  items-center space-x-4">
               <div className="hidden md:flex space-x-4">
-                {ManuItensAppEstudante.map((item) => (
+                {userType === 'medico' ?
+                  (ManuItensAppMedico.map((item) => (
+                    <Link
+                      key={item.route}
+                      href={item.route}
+                      className=" transition duration-500 ease-in-out border-b-4 border-transparent hover:border-primary"
+                    >
+                      {item.item}
+                    </Link>)))
+                 : (ManuItensAppEstudante.map((item) => (
                   <Link
                     key={item.route}
-                    href={""}
+                    href={item.route}
                     className=" transition duration-500 ease-in-out border-b-4 border-transparent hover:border-primary"
                   >
                     {item.item}
-                  </Link>
+                  </Link>)
                 ))}
               </div>
               <UserNav />
