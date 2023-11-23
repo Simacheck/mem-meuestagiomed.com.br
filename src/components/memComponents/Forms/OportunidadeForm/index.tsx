@@ -37,8 +37,20 @@ import { z } from "zod";
 
 const formSchema = z.object({
   area: z.string(),
-  
-});
+  bairro: z.string(),
+  cidade: z.string(),
+  estado: z.string(),
+  semestre:  z.string(),
+  start: z.date(),
+  end: z.date(),
+  horas: z.string(),
+  atividades: z.string().array(),
+  requisitos: z.string().array(),
+  descricao: z.string()
+}).refine((data) => data.end > data.start, {
+    path: ["end"],
+    message: "A data final não pode ser maior que a data inicial.",
+  });;
 
 export const OportunidadeForm = () => {
   const form = useForm({
@@ -121,14 +133,14 @@ export const OportunidadeForm = () => {
             maxL={5}
             label="Atividades Programadas"
             formControl={form.control}
-            name={"atividadesProgramadas"}
+            name={"atividades"}
           />
 
           <InputList
             maxL={5}
             label="Requisitos Mínimos"
             formControl={form.control}
-            name={"Requisitos Mínimos"}
+            name={"requisitos"}
           />
         </div>
         <div className="px-4 flex w-full flex gap-2">

@@ -45,8 +45,6 @@ export const InputList = ({
 
           setTwoStates(novoObj);
 
-          console.log("valor novo", novoObj);
-
           return;
         };
 
@@ -54,7 +52,6 @@ export const InputList = ({
           setValues(values);
           field.onChange(values);
         }
-        console.log(field.value ? field.value.length : 0)
         return (
           <FormItem className={className}>
             {label && <FormLabel htmlFor={name}>{label} ({field.value ? field.value.length :  0} / {maxL})</FormLabel>}
