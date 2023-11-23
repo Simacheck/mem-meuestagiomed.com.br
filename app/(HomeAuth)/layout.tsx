@@ -4,12 +4,15 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { CentralizerContainer } from '@/components/memComponents/CentralizerContainer'
 import Link from 'next/link'
-import { MenuItensHome } from '@/utils/menuitens'
-import { Menu } from 'lucide-react'
+import { ManuItensAppEstudante, ManuItensAppMedico, MenuItensHome } from '@/utils/menuitens'
 import { HamburguerMenu } from '@/components/memComponents/HomeNav/MenuHamburguer'
 import { LoginList } from '@/components/memComponents/HomeNav/LoginList'
-import { Toaster } from '@/components/ui/toaster'
+import Image from "next/image";
+import { UserNav } from '@/components/memComponents/HomeNav/UserNav'
 import { SigninProvider } from '@/hook/useSignin'
+import { AuthMenuBar } from '@/components/memComponents/MenuBarAuth'
+import { Toaster } from '@/components/ui/toaster'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,16 +26,22 @@ export default function HomeRootLayout({
 }: {
   children: React.ReactNode
 }) {
-
-  
+  const userType = 'medico'
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <SigninProvider>
-          {children}
-        </SigninProvider>
-        <Toaster />
-      </body>
-    </html>
+      <html lang="pt-BR">
+        <body className={inter.className}>
+          <div>
+          <SigninProvider>
+            
+            <AuthMenuBar />
+          
+            {children}
+            <Toaster />
+          </SigninProvider>
+          </div>
+        </body>
+      </html>
+    
+   
   );
 }

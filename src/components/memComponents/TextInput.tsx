@@ -19,7 +19,7 @@ export const TextInput = ({formControl, name, label, placeholder, description, c
         control={formControl}
         name={name}
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="w-full">
             {label && <FormLabel>{label}</FormLabel>}
             <FormControl>
               <Textarea

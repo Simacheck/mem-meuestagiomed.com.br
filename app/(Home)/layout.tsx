@@ -23,17 +23,17 @@ export default function HomeRootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+    <body className={inter.className}>
         <Menubar>
           <CentralizerContainer>
             <div>
-              <Image src='/loggo.png' alt='logo' height={50} width={120} />
+              <Image src='/logo-simples-azul.png' alt='logo' height={50} width={120} />
             </div>
             <div className="hidden md:flex space-x-4 ">
               {MenuItensHome.map((item) => (
                 <Link
-                  key={item.route}
-                  href={item.route}
+                key={item.route}
+                href={item.route}
                   className=" transition duration-500 ease-in-out border-b-4 border-transparent hover:border-primary"
                 >
                   {item.item}
@@ -49,5 +49,6 @@ export default function HomeRootLayout({
         {children}
       </body>
     </html>
+     
   );
 }

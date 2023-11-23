@@ -11,8 +11,8 @@ import { Label } from "../ui/label";
 
 interface Props {
     label?: string;
-    value?: Date;
-    setValue: void;
+    value?: Date | null;
+    setValue: (e:any) => void;
 }
 
 export const SingleDate = ({label, value, setValue}: Props) => {
@@ -37,8 +37,8 @@ export const SingleDate = ({label, value, setValue}: Props) => {
                 <PopoverContent className="w-auto p-0">
                     <Calendar
                     mode="single"
-                    selected={value}
-                    onSelect={() => setValue}
+                    selected={value ? value : undefined}
+                    onSelect={(e) => setValue(e)}
                     initialFocus
                     className=" bg-white"
                     />

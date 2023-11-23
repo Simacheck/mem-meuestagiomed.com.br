@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
+import format from 'date-fns/format'
 
 const notifications = [
   {
@@ -32,11 +33,17 @@ type CardProps = React.ComponentProps<typeof Card>;
 
 interface Props {
   situation?: "closed" | "maturity" | "selected" | "notSelected";
+  area: string;
+  time: string;
+  locale: string;
+  type: string;
+  semestreMin: string;
+  initialDate: number;
+  finishDate: number;
 }
 
-export function EstagioCard({ situation }: Props) {
+export function EstagioCard({ situation, area, time, locale, type, semestreMin, initialDate,finishDate }: Props) {
   const router = useRouter();
-
 
   return (
     <Card
@@ -69,10 +76,10 @@ export function EstagioCard({ situation }: Props) {
         </div>
       )}
       <CardHeader>
-        <CardTitle>Estágio em Dermatologia</CardTitle>
+        <CardTitle>Estágio em {area}</CardTitle>
         <CardDescription className="flex gap-2">
-          <Badge>Dermatologia</Badge>
-          <Badge>60hrs</Badge>
+          <Badge>{area}</Badge>
+          <Badge>{time}</Badge>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -81,7 +88,7 @@ export function EstagioCard({ situation }: Props) {
             <p className="text-sm font-bold leading-none">Localização</p>
             <div>
               <p className="text-lg  text-muted-foreground">
-                Vila Olímpia - São Paulo - SP
+                {locale}
               </p>
             </div>
           </div>
@@ -89,27 +96,27 @@ export function EstagioCard({ situation }: Props) {
             <p className="text-sm font-bold leading-none">Tipo de Estágio</p>
             <div>
               <p className="text-lg  text-muted-foreground">
-                Clínica Particular
+                {type}
               </p>
             </div>
           </div>
           <div className="mb-1 items-start pb-2 last:mb-0 last:pb-0">
             <p className="text-sm font-bold leading-none">Semestre Mínimo:</p>
             <div>
-              <p className="text-lg  text-muted-foreground">6º Semestre</p>
+              <p className="text-lg  text-muted-foreground">{semestreMin}º Semestre</p>
             </div>
           </div>
           <div className="flex flex-row mb-1 pb-2 ">
             <div className="w-[49%]">
               <p className="text-sm font-bold leading-none">De</p>
               <div>
-                <p className="text-lg  text-muted-foreground">15/08/23</p>
+                <p className="text-lg  text-muted-foreground">{initialDate && format(initialDate, 'd/MM/yyyy')}</p>
               </div>
             </div>
             <div className="w-[49%]">
               <p className="text-sm font-bold leading-none">Ate</p>
               <div>
-                <p className="text-lg  text-muted-foreground">15/08/23</p>
+                <p className="text-lg  text-muted-foreground">{finishDate && format(finishDate, 'd/MM/yyyy')}</p>
               </div>
             </div>
           </div>
@@ -118,7 +125,7 @@ export function EstagioCard({ situation }: Props) {
       <CardFooter>
         <Button
           className="w-full"
-          onClick={() => router.push("/app/estagio/endocrino")}
+          onClick={() => router.push("/app/oportunidade/endocrino")}
         >
           Ver mais informações
         </Button>

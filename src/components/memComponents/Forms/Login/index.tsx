@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
-import { api } from "@/utils/services";
+import { useSignin } from "@/hook/useSignin";
 
 const formSchema = z.object({
   email: z.string({ required_error: "É necessário um e-mail" }).email({
@@ -32,37 +32,17 @@ interface ValuesI {
 
 export function LoginForm() {
   const router = useRouter()
-    const { toast } = useToast();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    //resolver: zodResolver(formSchema),
   });
+  const { signIn } = useSignin()
 
-  const onSubmit = (values: ValuesI) => {
-
-    if(values.email === 'mem@mem.com.br' && values.password === 'senha12') {
-      getBosses(values)
-
-      return
-    } 
-    toast({
-      title: "Email ou senha incorretos!",
-      description: `${JSON.stringify(values)}`,
-      icon: "alert",
-    });
-    return;
+  const onSubmit = async (values: ValuesI) => {
+    const {email, password} = values
+    console.log(values)
+    signIn(values)
   };
-
-  async function getBosses(values:any) {
-    try {
-        const {data} = await api.post(`/login`, values)
-        console.log(data)
-       // router.push('/app')
-        
-        return
-    } catch (e) {
-        console.log(e)
-    }
-}
 
   return (
     <>

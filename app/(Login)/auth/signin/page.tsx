@@ -8,9 +8,9 @@ export default function Signin() {
     <div className="h-screen flex align-center ">
       <div className="m-auto">
         <Image
-          src="/loggo.png"
+          src="/logo-simples-azul.png"
           height={200}
-          width={260}
+          width={240}
           alt="usp"
           className="m-auto pb-5"
         />
