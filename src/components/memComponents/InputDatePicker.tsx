@@ -11,7 +11,7 @@ import {
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DateRange } from "react-day-picker";
-import { addDays, format } from "date-fns";
+import { addDays, format, toDate } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
@@ -36,7 +36,7 @@ export const InputSimpleDate = ({
   description,
   className,
 }: Props) => {
-
+  console.log(formControl)
   return (
     <FormField
       control={formControl}
@@ -67,7 +67,7 @@ export const InputSimpleDate = ({
                   <Calendar
                     locale={ptBR}
                     mode="single"
-                    selected={field.value}
+                    selected={toDate(field.value)}
                     onSelect={(e) => field.onChange(e)}
                     initialFocus
                     className=" bg-white"

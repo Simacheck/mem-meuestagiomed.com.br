@@ -1,60 +1,60 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { InputMultiSelectForm } from "../../InputMultiSelectForm";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { TextInput } from "../../TextInput";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { InputMaskForm } from "../../InputMaskForm";
 import { InputForm } from "../../InputForm";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { InputDocForm } from "../../InputDocForm";
 import { InputSelectForm } from "../../InputSelectForm";
-import { InputDateFormTwo } from "../../InputDateForm";
-import { RangeDatePicker } from "../../RangeDatePicker";
 import { InputSimpleDate } from "../../InputDatePicker";
 import { InputList } from "../../InputList";
-import { Semestres } from "@/utils/options";
+import { Areas, Locais, Semestres } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { VagaI } from "@/utils/types/vagaI";
+import { validarOpcaoUnica } from "@/utils/functions";
+import { toDate } from "date-fns";
 
-const formSchema = z.object({
-  area: z.string(),
-  bairro: z.string(),
-  cidade: z.string(),
-  estado: z.string(),
-  semestre:  z.string(),
-  start: z.date(),
-  end: z.date(),
-  horas: z.string(),
-  atividades: z.string().array(),
-  requisitos: z.string().array(),
-  descricao: z.string()
-}).refine((data) => data.end > data.start, {
+interface Props {
+  values?: VagaI
+}
+
+const formSchema = z
+  .object({
+    area: z.string(),
+    type: z.string(),
+    dataFinalInscricao: z.date(),
+    bairro: z.string(),
+    cidade: z.string(),
+    estado: z.string(),
+    semestre: z.string(),
+    initialDate: z.date(),
+    finishDate: z.date(),
+    time: z.string(),
+    atividades: z.string().array(),
+    requisitos: z.string().array(),
+    descricao: z.string(),
+  })
+  .refine((data) => data.finishDate > data.initialDate, {
     path: ["end"],
     message: "A data final não pode ser maior que a data inicial.",
-  });;
+  }).refine(data => data.dataFinalInscricao <= data.initialDate , {
+    path: ["dataFinalInscricao"],
+    message: "A data final de inscrição não pode ser maior que a data inicial.",
+  });
 
-export const OportunidadeForm = () => {
+export const OportunidadeForm = ({values}: Props) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      area: values?.area && validarOpcaoUnica(values.area, Areas),
+      type: values?.type && validarOpcaoUnica(values.type, Locais),
+      dataFinalInscricao: values?.dataFinalInscricao && toDate(Date.parse(values.dataFinalInscricao)),
+      finishDate: values?.finishDate && toDate(Date.parse(values.finishDate)),
+      initialDate: values?.initialDate && toDate(Date.parse(values.initialDate)),
+      bairro: values?.bairro,
+
+    }
   });
 
   const onSubmit = (values: any) => {
@@ -71,11 +71,28 @@ export const OportunidadeForm = () => {
             placeholder="Selecione a área"
             name={`area`}
             className="max-w-[400px]"
-            itens={[
-              { label: "Ortopedia", value: "123" },
-              { label: "Pscqud", value: "1123" },
-            ]}
+            itens={Areas}
           />
+        </div>
+        <div className="px-4 flex items-center gap-2">
+          <div>
+            <p>Em qual tipo de local será realizado o acompanhamento?</p>
+            <InputSelectForm
+              formControl={form.control}
+              placeholder="Selecione"
+              name={`type`}
+              className="max-w-[400px]"
+              itens={Locais}
+            />
+          </div>
+          <div>
+          <p>Qual a data final para inscrição?</p>
+          <InputSimpleDate
+            formControl={form.control}
+            name={"dataFinalInscricao"}
+            />
+
+          </div>
         </div>
         <div className="px-4 flex flex-col gap-2">
           <p>Em qual bairro, cidade e estado será realizado?</p>
@@ -112,18 +129,18 @@ export const OportunidadeForm = () => {
           <InputSimpleDate
             label="Data de Início"
             formControl={form.control}
-            name={"start"}
+            name={"initialDate"}
           />
           <InputSimpleDate
             label="Data de Final"
             formControl={form.control}
-            name={"end"}
+            name={"finishDate"}
           />
           <InputForm
             label="Quantidade de Horas "
             formControl={form.control}
             placeholder="Horas"
-            name={`horas`}
+            name={`time`}
             type="number"
           />
         </div>
@@ -145,15 +162,14 @@ export const OportunidadeForm = () => {
         </div>
         <div className="px-4 flex w-full flex gap-2">
           <TextInput
-                label="Descreva um pouco sobre a oportunidade:"
-                formControl={form.control}
-
-                name={`descricao`}
-                placeholder={
-                  "Fale um pouco a oportunidade, qual será a rotina, quais as expectativas para o candidato e quais as suas expectativas da experiência prévia do candidato"
-                }
-                />
-          </div>
+            label="Descreva um pouco sobre a oportunidade:"
+            formControl={form.control}
+            name={`descricao`}
+            placeholder={
+              "Fale um pouco a oportunidade, qual será a rotina, quais as expectativas para o candidato e quais as suas expectativas da experiência prévia do candidato"
+            }
+          />
+        </div>
         <Button type="submit"> Criar Estágio</Button>
       </form>
     </Form>
