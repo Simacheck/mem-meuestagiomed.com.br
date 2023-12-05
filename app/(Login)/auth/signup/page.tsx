@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import NetSteps from "./NewSteps";
+import NewSteps from "../../../../src/components/memComponents/Forms/Signup/NewSteps";
 
 
 export default function Signin() {
@@ -11,8 +11,7 @@ export default function Signin() {
           <CardHeader>
             <CardTitle className="text-2xl ">Cadastre-se:</CardTitle>
           </CardHeader>
-
-          <NetSteps />
+          <NewSteps />
         </Card>
       </div>
     </div>

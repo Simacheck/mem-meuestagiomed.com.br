@@ -8,7 +8,7 @@ import { InputForm } from "../../InputForm";
 import { InputSelectForm } from "../../InputSelectForm";
 import { InputSimpleDate } from "../../InputDatePicker";
 import { InputList } from "../../InputList";
-import { Areas, Locais, Semestres } from "@/utils/options";
+import { Areas, Estados, Locais, Semestres } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { VagaI } from "@/utils/types/vagaI";
@@ -27,7 +27,7 @@ const formSchema = z
     bairro: z.string(),
     cidade: z.string(),
     estado: z.string(),
-    semestre: z.string(),
+    semestreMin: z.string(),
     initialDate: z.date(),
     finishDate: z.date(),
     time: z.string(),
@@ -53,7 +53,9 @@ export const OportunidadeForm = ({values}: Props) => {
       finishDate: values?.finishDate && toDate(Date.parse(values.finishDate)),
       initialDate: values?.initialDate && toDate(Date.parse(values.initialDate)),
       bairro: values?.bairro,
-
+      cidade: values?.cidade,
+      estado: values?.estado && validarOpcaoUnica(values.estado, Estados),
+      semestreMin: values?.semestreMin && validarOpcaoUnica(values.estado.toString(), Estados),
     }
   });
 
@@ -111,10 +113,7 @@ export const OportunidadeForm = ({values}: Props) => {
               formControl={form.control}
               placeholder="Estado"
               name={`estado`}
-              itens={[
-                { label: "SP", value: "SP" },
-                { label: "PR", value: "PR" },
-              ]}
+              itens={Estados}
             />
           </div>
         </div>
@@ -123,7 +122,7 @@ export const OportunidadeForm = ({values}: Props) => {
           <InputSelectForm
             formControl={form.control}
             label="Semestre Mínimo"
-            name={`semestre`}
+            name={`semestreMin`}
             itens={Semestres}
           />
           <InputSimpleDate

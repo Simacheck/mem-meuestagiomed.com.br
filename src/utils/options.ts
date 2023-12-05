@@ -23,3 +23,8 @@ export const Locais = [
   { label: "Clinica Publica", value: "publica" },
   { label: "Hospital", value: "hospital" },
 ];
+
+export const Estados = [
+  { label: "Pr", value: "Pr" },
+  { label: "Sp", value: "Sp" },
+]

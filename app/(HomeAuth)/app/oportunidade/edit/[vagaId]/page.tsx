@@ -47,7 +47,7 @@ export default function EditEstagio({params}:Props) {
   useEffect(() => {
     setLoading(true);
     getDados(vagaId);
-    setLoading(false);
+    setTimeout(() => setLoading(false), 2000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vagaId]);
 
@@ -56,7 +56,7 @@ export default function EditEstagio({params}:Props) {
   return (
     <CentralizerContainer outhers={"pt-[5.5rem] "}>
       <div className="w-full">
-        <h2 className="text-3xl">Editar Estágio:</h2>
+        <h2 className="text-3xl">Editar Estágio {`#${vagaId}`}</h2>
 
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col flex-wrap justify-around md:justify-start gap-2 w-full p-2 my-2">
           {

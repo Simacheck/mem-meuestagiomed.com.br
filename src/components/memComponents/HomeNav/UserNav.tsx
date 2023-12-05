@@ -63,7 +63,7 @@ export function UserNav() {
         </DropdownMenuGroup>
         <Separator />
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>Sair</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

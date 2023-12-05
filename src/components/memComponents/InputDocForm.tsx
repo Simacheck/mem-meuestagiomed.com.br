@@ -24,6 +24,7 @@ interface Props {
   placeholder?: string;
   description?: string;
   className?: string;
+  accept: string;
 }
 
 const convertToBase64 = async (file: any): Promise<string> => {
@@ -43,6 +44,7 @@ export const InputDocForm = ({
   label,
   description,
   className,
+  accept
 }: Props) => {
   return (
     <FormField
@@ -55,7 +57,7 @@ export const InputDocForm = ({
             <Input
               name={"picture"}
               type="file"
-              accept="application/pdf"
+              accept={accept}
               onChange={async (event: ChangeEvent<HTMLInputElement>) => {
                 const { target } = event;
                 const files = target.files;
@@ -66,7 +68,10 @@ export const InputDocForm = ({
 
                 try {
                   const base64File = await convertToBase64(file);
-                  field.onChange(base64File);
+                  const type = file?.type
+
+
+                  field.onChange({content: base64File, type});
                 } catch (e) {
                   console.log(e);
                 }

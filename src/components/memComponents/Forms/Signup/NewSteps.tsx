@@ -7,26 +7,27 @@ import { MedicoSignup } from "@/components/memComponents/Forms/Signup/MedicoSign
 import { EstudanteSignup } from "@/components/memComponents/Forms/Signup/EstudanteSignup";
 import { ConfirmationLogin } from "@/components/memComponents/Forms/ConfirmationAccount";
 
-
 export default function NewSteps() {
-  const [userType, setUserType] = useState<number | null>()
-  const [tela, setTela] = useState<number>(0)
+  const [userType, setUserType] = useState<number | null>();
+  const [tela, setTela] = useState<number>(0);
 
   const handleChangeUserType = (id: number, stepNumber?: number) => {
-
     setUserType(id);
     setTela(stepNumber ? stepNumber : 0);
+  };
+
+  const handleChanceStep = (stepNumber?: number) => {
+    setTela(stepNumber ? stepNumber : 0);
+  };
+
+  useEffect(() => {
+    handleUseSelectedTab(tela);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tela]);
+
+  function handleUseSelectedTab(number: number) {
+    setSelectedTab(allSteps[number]);
   }
-
-  useEffect( () => {
-    handleUseSelectedTab(tela)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tela])
-
- function handleUseSelectedTab(number: number) {
-  
-   setSelectedTab(allSteps[number]);
- }
 
   const allSteps = [
     {
@@ -41,13 +42,11 @@ export default function NewSteps() {
       component:
         userType === 1 ? (
           <EstudanteSignup
-            handleUseSelectedTab={handleUseSelectedTab}
-            userType={userType}
+            handleUseSelectedTab={handleChanceStep}
           />
         ) : (
           <MedicoSignup
-            handleUseSelectedTab={handleUseSelectedTab}
-            userType={userType}
+            handleUseSelectedTab={handleChanceStep}
           />
         ),
       status: 0,
@@ -70,7 +69,6 @@ export default function NewSteps() {
             <li
               key={item.label}
               className={item === selectedTab ? "selected" : ""}
-              onClick={() => setSelectedTab(item)}
             >
               <span
                 className={`flex items-center justify-center ${

@@ -10,8 +10,8 @@ import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { Icons } from "../../Icons";
 import { Loader2 } from "lucide-react";
+import { api } from "@/utils/services";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -20,79 +20,65 @@ const formSchema = z.object({
 });
 
 interface ValuesI {
-  email: string
+  email: string;
 }
 
-export function RecoverEmailForm() {
-  const router = useRouter();
-  const { toast } = useToast();
+interface Props {
+  handleChangeEtapa: (email: string) => void;
+}
+
+export function RecoverEmailForm({ handleChangeEtapa }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const [text, setText ] = useState<string>()
   const [loading, setLoading] = useState<boolean>(false);
 
-  const onSubmit = (values: ValuesI) => {
+  const onSubmit = async (values: ValuesI) => {
     console.log(values);
     setLoading(true);
-    setText(values.email);
-    toast({
-      title: "Um e-mail foi enviado!",
-      description:
-        "Um e-mail com as instruções foi enviado, verifique sua caixa de e-mail.",
-      icon: "sucess",
-    });
+    setTimeout(() => handleChangeEtapa(values.email), 2000)
+    /*await api
+      .post(`/auth/forgot/`, values)
+      .then((e) => {
+       
+        return handleChangeEtapa(values.email);
+      })
+      .catch((e) => {
 
-    setTimeout(() => router.push("/signin"), 5000);
+        return;
+      });
+*/
+    // setTimeout(() => router.push("/signin"), 5000);
   };
-  console.log(loading)
 
   return (
     <>
       <CardContent className="grid py-1">
-        {!loading ? (
-          <div>
-            <CardDescription>Preencha os dados abaixo:</CardDescription>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="w-full flex-col"
-              >
-                <InputForm
-                  formControl={form.control}
-                  type={"email"}
-                  className="mb-4"
-                  placeholder={"Email de Cadastro"}
-                  name="email"
-                />
-                <Button className="w-full " disabled={loading}>
-                  Próximo
-                  {loading && (
-                    <Loader2 className="mr-2 ml-4 h-4 w-4 animate-spin" />
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </div>
-        ) : (
-          <div className="pb-4 text-center">
-            <div>
-              <p>
-                <span className="font-bold">Excelente!</span>
-              
-              <br />
-              Um e-mail foi enviado para <span className="font-bold">{text}</span>, verifique os
-              próximos passos por lá.
-              <br />
-              </p>
-              <div className="py-2">
-                <p>
-                  <span className="">Você será redirecionado em 5 segundos.</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        <div>
+          <CardDescription>Preencha os dados abaixo:</CardDescription>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full flex-col"
+            >
+              <InputForm
+                formControl={form.control}
+                type={"email"}
+                className="mb-4"
+                placeholder={"Email de Cadastro"}
+                name="email"
+              />
+              <Button className="w-full " disabled={loading}>
+                Próximo
+                {loading && (
+                  <Loader2 className="mr-2 ml-4 h-4 w-4 animate-spin" />
+                )}
+              </Button>
+            </form>
+          </Form>
+        </div>
+
+        
       </CardContent>
     </>
   );

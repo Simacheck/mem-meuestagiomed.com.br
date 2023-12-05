@@ -11,7 +11,7 @@ import { VagaI } from "@/utils/types/vagaI"
 
 
 export const HomeMedico = () => {
-    const [allVagas, setAllVagas] = useState<VagaI[]>()
+    const [allVagas, setAllVagas] = useState<VagaI[]>([])
     const [confirmados, setConfirmados] = useState<VagaI[]>([])
     const [aberto, setAberto] = useState<VagaI[]>([])
     const [finalizado, setFinalizado] = useState<VagaI[]>([])
@@ -32,11 +32,11 @@ export const HomeMedico = () => {
 
           r.data.filter((x: VagaI) => {
 
-            if(x.situacao == 'aberto') {            
+            if(x?.infoMedico?.situacao == 'aberto') {            
               newAberto?.push(x)
-            } else if (x.situacao == 'confirmado' ){
+            } else if (x?.infoMedico?.situacao == 'confirmado' ){
               newConfirmados?.push(x)
-            } else if (x.situacao == 'finalizado'){
+            } else if (x?.infoMedico?.situacao == 'finalizado'){
               newFinalizados?.push(x)
             }
           })
@@ -128,18 +128,19 @@ export const HomeMedico = () => {
                 />
 
                 <div className="flex w-full gap-2 justify-left overflow-x-auto  ">
-                  {aberto ? (
+                  {aberto.length > 0 ? (
                     aberto?.map((x, idx) => (
                       <EstagioCard
                         key={idx}
                         area={x.area}
                         time={x.time}
-                        locale={x.locale}
+                        bairro={x.bairro}
+                        cidade={x.cidade}
+                        estado={x.estado}
                         type={x.type}
                         semestreMin={x.semestreMin}
                         initialDate={Date.parse(x.initialDate)}
-                        finishDate={Date.parse(x.finishDate)}
-                      />
+                        finishDate={Date.parse(x.finishDate)} />
                     ))
                   ) : (
                     <div className="h-[20rem] flex justify-center items-center w-full">
@@ -157,17 +158,19 @@ export const HomeMedico = () => {
                 />
 
                 <div className="flex w-full gap-2 justify-left overflow-x-auto  ">
-                  {confirmados ? (
+                  {confirmados.length > 0 ? (
                     confirmados?.map((x, idx) => (
                       <EstagioCard
-                        key={idx}
-                        area={x.area}
-                        time={x.time}
-                        locale={x.locale}
-                        type={x.type}
-                        semestreMin={x.semestreMin}
-                        initialDate={Date.parse(x.initialDate)}
-                        finishDate={Date.parse(x.finishDate)}
+                      key={idx}
+                      area={x.area}
+                      time={x.time}
+                      bairro={x.bairro}
+                      cidade={x.cidade}
+                      estado={x.estado}
+                      type={x.type}
+                      semestreMin={x.semestreMin}
+                      initialDate={Date.parse(x.initialDate)}
+                      finishDate={Date.parse(x.finishDate)} 
                       />
                     ))
                   ) : (
@@ -186,17 +189,19 @@ export const HomeMedico = () => {
                 />
 
                 <div className="flex w-full gap-2 justify-left overflow-x-auto  ">
-                  {finalizado ? (
+                  {finalizado.length > 0 ? (
                     finalizado?.map((x, idx) => (
                       <EstagioCard
-                        key={idx}
-                        area={x.area}
-                        time={x.time}
-                        locale={x.locale}
-                        type={x.type}
-                        semestreMin={x.semestreMin}
-                        initialDate={Date.parse(x.initialDate)}
-                        finishDate={Date.parse(x.finishDate)}
+                      key={idx}
+                      area={x.area}
+                      time={x.time}
+                      bairro={x.bairro}
+                      cidade={x.cidade}
+                      estado={x.estado}
+                      type={x.type}
+                      semestreMin={x.semestreMin}
+                      initialDate={Date.parse(x.initialDate)}
+                      finishDate={Date.parse(x.finishDate)} 
                       />
                     ))
                   ) : (
@@ -213,17 +218,19 @@ export const HomeMedico = () => {
                 />
 
                 <div className="flex w-full gap-2 justify-left overflow-x-auto  ">
-                  {allVagas ? (
+                  {allVagas.length > 0 ? (
                     allVagas?.map((x, idx) => (
                       <EstagioCard
-                        key={idx}
-                        area={x.area}
-                        time={x.time}
-                        locale={x.locale}
-                        type={x.type}
-                        semestreMin={x.semestreMin}
-                        initialDate={Date.parse(x.initialDate)}
-                        finishDate={Date.parse(x.finishDate)}
+                      key={idx}
+                      area={x.area}
+                      time={x.time}
+                      bairro={x.bairro}
+                      cidade={x.cidade}
+                      estado={x.estado}
+                      type={x.type}
+                      semestreMin={x.semestreMin}
+                      initialDate={Date.parse(x.initialDate)}
+                      finishDate={Date.parse(x.finishDate)} 
                       />
                     ))
                   ) : (

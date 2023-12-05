@@ -21,10 +21,11 @@ interface Props {
   placeholder?: string;
   description?: string;
   className?: string;
+  accept?: string;
 }
-export const InputForm = ({
+export const InputImageForm = ({
   formControl,
-  type,
+  accept,
   name,
   label,
   placeholder,
@@ -59,7 +60,7 @@ export const InputForm = ({
             <Input
               name={"picture"}
               type="file"
-              accept="image/*"
+              accept={accept}
               onChange={handleChangeInput}
             />
           </FormControl>

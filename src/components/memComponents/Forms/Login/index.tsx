@@ -68,7 +68,7 @@ export function LoginForm() {
                   name="password"
                 />
                 <div className="w-full text-right">
-                  <Link className="text-xs underline" href={"/recover"}>
+                  <Link className="text-xs underline" href={"/auth/recover"}>
                     {" "}
                     Esqueci minha senha
                   </Link>
@@ -92,7 +92,7 @@ export function LoginForm() {
           </div>
         </div>
 
-        <Button className="w-full" onClick={() => router.push("/signup")}>
+        <Button className="w-full" onClick={() => router.push("/auth/signup")}>
           Criar Conta
         </Button>
       </CardFooter>

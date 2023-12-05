@@ -6,32 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { InputForm } from "../../InputForm";
-import {
-  Form,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { InputMaskForm } from "../../InputMaskForm";
 import { InputSelectForm } from "../../InputSelectForm";
-import { statesBR } from "@/utils/states";
 import { useToast } from "@/components/ui/use-toast";
 import { InputCheckboxForm } from "../../InputCheckBoxForm";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { InputDateFormTwo } from "../../InputDateForm";
 import "../../../react-datepicker.css";
-
-const convertToBase64 = (file: any ): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader();
-
-    
-    fileReader.readAsDataURL(file);
-    fileReader.onload = () => resolve(fileReader.result as string);
-    fileReader.onerror = () => reject(new Error("error on tranform to base64"));
-  });
-};
+import { InputDocForm } from "../../InputDocForm";
+import { sub } from "date-fns";
+import { statesBR } from "@/utils/menuitens";
+import { api } from "@/utils/services";
+import { FileRequestI } from "@/utils/types/vagaI";
 
 const formSchema = z
   .object({
@@ -39,20 +28,28 @@ const formSchema = z
     email: z
       .string({ required_error: "Email é necessário" })
       .email({ message: "E-mail inválido" }),
-    tel: z.string({ required_error: "É necessário um número" }),
-    cpf: z.string({ required_error: "É necessário um CPF" }),
-    birthday: z.date({
-      required_error: "É necessário uma data válida",
+    phone_number: z.string({ required_error: "É necessário um número" }),
+    tax_document: z.string({ required_error: "É necessário um CPF" }),
+    birthdate: z
+      .date({
+        required_error: "É necessário uma data válida",
+      })
+      .max(sub(new Date(), { years: 18 }), {
+        message: "É necessário ser maior de 18 anos",
+      }),
+    picture_url: z.object({ 
+      type: z.string({ required_error: "É necessário uma foto de perfil"  }),
+      content: z.string({ required_error: "É necessário uma foto de perfil"  }),
     }),
-    crm: z.string({ required_error: "É necessário um CRM" }),
-    ufCrm: z.string({ required_error: "É necessário um Estado" }),
+    professional_certificate: z.string({ required_error: "É necessário um CRM" }),
+    federative_unit_professional_certificate: z.string({ required_error: "É necessário um Estado" }),
     password: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
     confirmPassword: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
-    terms: z.literal(true, {
+    usage_terms: z.literal(true, {
       invalid_type_error: "É necessário aceitar os termos de uso",
     }),
   })
@@ -62,56 +59,63 @@ const formSchema = z
   });
 
 interface Props {
-  userType: number | null | undefined;
   handleUseSelectedTab: (number: number) => void;
 }
 
-export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
+interface ValuesProps {
+  name: string;
+  email: string;
+  phone_number: string; 
+  birthdate: Date;
+  tax_document: string;
+  picture_url: FileRequestI;
+  professional_certificate: string;
+  federative_unit_professional_certificate: string;
+  password: string;
+  usage_terms: boolean;
+}
+
+export function MedicoSignup({ handleUseSelectedTab }: Props) {
   const { toast } = useToast();
-  const [base64, setBase64] = useState<string | null>(null);
-  const [base64error, setBase64Error] = useState<boolean>(false);
   const route = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-    },
   });
-  console.log(userType)
 
-  const handleChangeInput = async (event: ChangeEvent<HTMLInputElement>) => {
-    const { target } = event;
-    const files = target.files;
-
-    if (!files) return;
-
-    const file = files[0];
-
-    try {
-      const base64File = await convertToBase64(file);
-      setBase64(base64File);
-    } catch (e) {
-      console.log(e);
+  const onSubmit = async (values: ValuesProps) => {
+    const data = {
+      name: values.name,
+      email: values.email,
+      birthdate: values.birthdate.toDateString(),
+      phone_number: values.phone_number, 
+      tax_document: values.tax_document,
+      picture_url: values.picture_url,
+      professional_certificate: values.professional_certificate,
+      federative_unit_professional_certificate: values.federative_unit_professional_certificate,   
+      password: values.password,
+      usage_terms: values.usage_terms,
     }
-  };
 
-  const onSubmit = async (values: any) => {
-    if (base64 === null) {
-      setBase64Error(true);
 
-      return;
-    } else setBase64Error(false);
+    await api.post(`/auth/signup/medic`, data).then(e => {
+      toast({
+        title: "Sucesso!",
+        description:
+          "Seu cadastro foi recebido, iremos enviar um e-mail para confirmação",
+        icon: "sucess",
+      });
 
-    const newValues = { ...values, picture: base64 };
-    console.log(newValues)
-    toast({
-      title: "Sucesso!",
-      description:
-        "Seu cadastro foi recebido, iremos enviar um e-mail para confirmação",
-      icon: "sucess",
-    });
+      return setTimeout(() => handleUseSelectedTab(2), 1000);
+    }).catch(e => {
+      toast({
+        title: "Erro!",
+        description:
+          "Algo deu errado, por gentileza, tente mais tarde.",
+        icon: "alert",
+      });
 
-    setTimeout(() => handleUseSelectedTab(2), 1000);
+      return 
+    })
   };
 
   return (
@@ -125,13 +129,6 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
               encType="multipart/form-data"
             >
               <ScrollArea className="h-[350px] overflow-auto">
-                <Link
-                  href={"/signin"}
-                  className="underline text-primary text-sm"
-                >
-                  {" "}
-                  Voltar{" "}
-                </Link>
                 <InputForm
                   formControl={form.control}
                   name={"name"}
@@ -147,23 +144,22 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
                 <InputMaskForm
                   formControl={form.control}
                   className="py-2"
-                  name={"tel"}
+                  name={"phone_number"}
                   mask={"(__) _ ____-____"}
                   placeholder="Digite seu número de telefone"
                 />
 
                 <div className=" py-2 flex gap-2 w-full">
-                  
                   <InputDateFormTwo
                     className="w-full max-w-[50%]"
                     formControl={form.control}
-                    name={"birthday"}
+                    name={"birthdate"}
                     placeholder="Data de Aniversario"
                   />
                   <InputMaskForm
                     formControl={form.control}
                     className="w-full max-w-[50%]"
-                    name={"cpf"}
+                    name={"tax_document"}
                     mask={"___.___.___-__"}
                     placeholder="Digite seu CPF"
                   />
@@ -172,34 +168,27 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
                 <div className=" py-2 flex gap-2 w-full">
                   <InputForm
                     formControl={form.control}
-                    name={"crm"}
+                    name={"professional_certificate"}
                     type="number"
                     placeholder="Digite seu CRM"
                     className="w-full max-w-[50%]"
                   />
                   <InputSelectForm
                     formControl={form.control}
-                    name={"ufCrm"}
+                    placeholder="Estado do CRM"
+                    name={"federative_unit_professional_certificate"}
                     className="w-full max-w-[50%]"
                     itens={statesBR}
                   />
                 </div>
 
-                <div>
-                  <Input
-                    name={"picture"}
-                    type="file"
+                <div className="py-2">
+                  <InputDocForm
+                    label={"Foto de Perfil"}
+                    formControl={form.control}
+                    name={"picture_url"}
                     accept="image/*"
-                    onChange={handleChangeInput}
                   />
-                  {base64error && (
-                    <p
-                      id={"picture"}
-                      className="text-sm font-medium text-red-500 mx-0"
-                    >
-                      É necessário ter uma foto
-                    </p>
-                  )}
                 </div>
 
                 <InputForm
@@ -221,7 +210,7 @@ export function MedicoSignup({ userType, handleUseSelectedTab }: Props) {
                 <div className="py-4 pt-2">
                   <InputCheckboxForm
                     formControl={form.control}
-                    name={"terms"}
+                    name={"usage_terms"}
                     className="flex py-2 items-center gap-2"
                     label={
                       <>
