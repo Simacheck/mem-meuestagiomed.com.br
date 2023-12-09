@@ -19,20 +19,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { InscritoI } from "@/utils/types/vagaI";
+import { ApplicationsI, StudentI } from "@/utils/types/vagaI";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { api } from "@/utils/services";
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
-  estudante: InscritoI;
+  aplication: ApplicationsI;
   idVaga?: string;
   oportunidadeAberta?: boolean;
   sendState: boolean;
   setSendState: Dispatch<SetStateAction<boolean>>
 }
 
-export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, sendState, setSendState }: Props) => {
+export const ModalDetalhesEstudante = ({ aplication, idVaga, oportunidadeAberta, sendState, setSendState }: Props) => {
+  const estudante = aplication.student
 
   const handleConfirmation = async () => {
     setSendState(true)
@@ -57,25 +58,26 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
               <Avatar className="h-[6rem] w-[6rem]">
                 <AvatarImage src="https://github.com/shadcn.png" />
               </Avatar>
-              <div className="text-xl">{estudante.nome}</div>
+              <div className="text-xl">{estudante.name}</div>
+              {aplication.status == 'selected' &&  <Badge>Selecionado</Badge>}
             </div>
             <div className="flex flex-col w-full justify-between">
-              {estudante.status == 'selecionado' ? (
+              {aplication.status == 'selected' ? (
                 <div className="flex w-full gap-10 justify-between py-2">
-                <div className="py-2 max-w-[30%]">
+                <div className="py-2 max-w-[45%]">
                   <div>
                     <div>
                       <p>Celular:</p>
                     </div>
-                    <h3 className="text-md">{estudante.celular}</h3>
+                    <h3 className="text-md">{estudante.phone_number}</h3>
                   </div>
                 </div>
-                <div className="py-2 max-w-[30%]">
+                <div className="py-2 max-w-[45%]">
                   <div>
-                    <div>
-                      <p>Email:</p>
+                    <div className="w-full">
+                      <p className="break-words">Email:</p>
                     </div>
-                    <h3 className="text-md">{estudante.email}</h3>
+                    <h3 className="text-md break-words">{estudante.email}</h3>
                   </div>
                 </div>
               </div>
@@ -86,7 +88,7 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
                     <div>
                       <p>Faculdade:</p>
                     </div>
-                    <h3 className="text-md">{estudante.faculdade}</h3>
+                    <h3 className="text-md">{estudante.university?.name}</h3>
                   </div>
                 </div>
 
@@ -95,7 +97,7 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
                     <div>
                       <p>Período:</p>
                     </div>
-                    <h3 className="text-md">{estudante.periodo}º</h3>
+                    <h3 className="text-md">{estudante.school_term}º</h3>
                   </div>
                 </div>
                 <div className="py-2 max-w-[30%]">
@@ -103,16 +105,8 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
                     <div>
                       <p>Campus:</p>
                     </div>
-                    <h3 className="text-md">{estudante.cidade}</h3>
+                    <h3 className="text-md">{estudante.university?.address?.city}</h3>
                   </div>
-                </div>
-              </div>
-              <div className="flex w-full gap-10 justify-between py-2">
-                <div>
-                  <div>
-                    <p>Breve Apresentação:</p>
-                  </div>
-                  <h4 className="text-md">{estudante.discricao}</h4>
                 </div>
               </div>
               <div className="flex w-full gap-10 justify-between py-2">
@@ -121,8 +115,8 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
                     <p>Áreas de Interesse:</p>
                   </div>
                   <div className="flex gap-2">
-                    {estudante.areas.map((x) => (
-                      <Badge key={x}>{x}</Badge>
+                    {estudante.specialities && estudante.specialities.map((x) => (
+                      <Badge key={x.id}>{x.name}</Badge>
                     ))}
                   </div>
                 </div>
@@ -133,7 +127,7 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
                 </div>
                 <Button
                   variant={"outline"}
-                  onClick={() => console.log("aqui", estudante.currículo)}
+                  onClick={() => console.log("aqui")}
                 >
                   <FileDown />
                 </Button>
@@ -142,14 +136,14 @@ export const ModalDetalhesEstudante = ({ estudante, idVaga, oportunidadeAberta, 
           </div>
         </DialogContent>
       </Dialog>
-      {oportunidadeAberta ? null : <AlertDialog>
+      {oportunidadeAberta && <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="outline" disabled={sendState} >{sendState ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Selecionar'}</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Confirma a seleção de {estudante.nome}?
+              Confirma a seleção de {estudante.name}?
             </AlertDialogTitle>
             <AlertDialogDescription>
               Após a confirmação, não será permitido a alteração do estagiário,

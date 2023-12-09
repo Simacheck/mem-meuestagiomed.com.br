@@ -8,7 +8,7 @@ export function ConfirmationLogin() {
   const router = useRouter();
 
   return (
-    <>
+    <div>
       <CardContent className="grid gap-2 py-2">
         <div>
           <div className="py-4">
@@ -19,6 +19,6 @@ export function ConfirmationLogin() {
           <Button className="w-full" onClick={() => router.push('/auth/signin')}>Retornar a área de login</Button>
         </div>
       </CardContent>
-    </>
+    </div>
   );
 }

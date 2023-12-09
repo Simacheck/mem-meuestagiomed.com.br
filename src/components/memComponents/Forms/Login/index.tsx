@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useSignin } from "@/hook/useSignin";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string({ required_error: "É necessário um e-mail" }).email({
@@ -36,7 +37,7 @@ export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     //resolver: zodResolver(formSchema),
   });
-  const { signIn } = useSignin()
+  const { signIn, loading } = useSignin()
 
   const onSubmit = async (values: ValuesI) => {
     const {email, password} = values
@@ -45,7 +46,7 @@ export function LoginForm() {
   };
 
   return (
-    <>
+    <div>
       <CardContent className="grid gap-2 py-2">
         <div>
           <Form {...form}>
@@ -75,7 +76,7 @@ export function LoginForm() {
                 </div>
               </div>
 
-              <Button className="w-full ">Entrar</Button>
+              <Button className="w-full ">{loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Entrar'}</Button>
             </form>
           </Form>
         </div>
@@ -92,10 +93,10 @@ export function LoginForm() {
           </div>
         </div>
 
-        <Button className="w-full" onClick={() => router.push("/auth/signup")}>
+        <Button className="w-full" disabled={loading} onClick={() => router.push("/auth/signup")}>
           Criar Conta
         </Button>
       </CardFooter>
-    </>
+    </div>
   );
 }

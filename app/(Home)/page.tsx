@@ -10,7 +10,7 @@ import { StepsHome } from "@/utils/textos";
 export default function Home() {
 
   return (
-    <>
+    <div>
       <StartAnimation>
         <div className="h-100 min-h-[400px] pt-20 md:pt-32 px-2">
           <div className="h-full w-full">
@@ -172,6 +172,6 @@ export default function Home() {
       </StartAnimation>
 
       <Footer />
-    </>
+    </div>
   );
 }

@@ -1,7 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import NewSteps from "../../../../src/components/memComponents/Forms/Signup/NewSteps";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  description: "Entrar | Meuestagiomed",
+  icons: '../favicon.ico'
+}; 
 
 export default function Signin() {
   return (

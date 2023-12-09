@@ -16,18 +16,19 @@ import {
 } from "../ui/select";
 
 interface OptionsProps {
-  value: string;
-  label: string;
+  value: any | string;
+  label: any | string;
 }
 
 interface Props {
   formControl: any;
   name: string;
   label?: string;
-  itens: OptionsProps[];
+  itens?: OptionsProps[];
   placeholder?: string;
   description?: string;
   className?: string;
+  disabled?: boolean;
 }
 export const InputSelectForm = ({
   formControl,
@@ -37,15 +38,18 @@ export const InputSelectForm = ({
   placeholder,
   description,
   className,
+  disabled
 }: Props) => {
+  
   return (
     <FormField
       control={formControl}
       name={name}
-      render={({ field }) => (
+      render={({ field }) => {        
+        return(
         <FormItem className={className}>
           {label && <FormLabel htmlFor={name}>{label}</FormLabel>}
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select disabled={disabled} onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder ? placeholder : ""} />
@@ -62,7 +66,7 @@ export const InputSelectForm = ({
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
-      )}
+      )}}
     />
   );
 };

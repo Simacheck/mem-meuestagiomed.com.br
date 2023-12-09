@@ -17,10 +17,15 @@ import { useRouter } from "next/navigation";
 import { InputDateFormTwo } from "../../InputDateForm";
 import "../../../react-datepicker.css";
 import { InputDocForm } from "../../InputDocForm";
-import { sub } from "date-fns";
+import { formatISO, sub } from "date-fns";
 import { statesBR } from "@/utils/menuitens";
 import { api } from "@/utils/services";
 import { FileRequestI } from "@/utils/types/vagaI";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
+const REG_Mai =
+  /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g;
 
 const formSchema = z
   .object({
@@ -37,15 +42,27 @@ const formSchema = z
       .max(sub(new Date(), { years: 18 }), {
         message: "É necessário ser maior de 18 anos",
       }),
-    picture_url: z.object({ 
-      type: z.string({ required_error: "É necessário uma foto de perfil"  }),
-      content: z.string({ required_error: "É necessário uma foto de perfil"  }),
+    picture: z.object(
+      {
+        type: z.string({ required_error: "É necessário uma foto de perfil" }),
+        content: z.string({
+          required_error: "É necessário uma foto de perfil",
+        }),
+      },
+      { required_error: "É necessário uma foto de perfil" }
+    ),
+    professional_certificate: z.string({
+      required_error: "É necessário um CRM",
     }),
-    professional_certificate: z.string({ required_error: "É necessário um CRM" }),
-    federative_unit_professional_certificate: z.string({ required_error: "É necessário um Estado" }),
+    federative_unit_professional_certificate: z.string({
+      required_error: "É necessário um Estado",
+    }),
     password: z
       .string({ required_error: "É necessário uma senha" })
-      .min(8, { message: "Sua senha é muito curta" }),
+      .min(8, { message: "Sua senha é muito curta" })
+      .regex(new RegExp(REG_Mai), {
+        message: "A senha deve conter pelo menos um caractere maiúsculo",
+      }),
     confirmPassword: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
@@ -65,10 +82,10 @@ interface Props {
 interface ValuesProps {
   name: string;
   email: string;
-  phone_number: string; 
+  phone_number: string;
   birthdate: Date;
   tax_document: string;
-  picture_url: FileRequestI;
+  picture: FileRequestI;
   professional_certificate: string;
   federative_unit_professional_certificate: string;
   password: string;
@@ -78,48 +95,53 @@ interface ValuesProps {
 export function MedicoSignup({ handleUseSelectedTab }: Props) {
   const { toast } = useToast();
   const route = useRouter();
+  const [load, setLoad] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = async (values: ValuesProps) => {
     const data = {
-      name: values.name,
       email: values.email,
-      birthdate: values.birthdate.toDateString(),
-      phone_number: values.phone_number, 
-      tax_document: values.tax_document,
-      picture_url: values.picture_url,
-      professional_certificate: values.professional_certificate,
-      federative_unit_professional_certificate: values.federative_unit_professional_certificate,   
       password: values.password,
-      usage_terms: values.usage_terms,
-    }
+      details: {
+        name: values.name,
+        birthdate: formatISO(values.birthdate),
+        phone_number: values.phone_number,
+        tax_document: values.tax_document,
+        //picture: values.picture,
+        professional_certificate: values.professional_certificate,
+        federative_unit_professional_certificate:
+          values.federative_unit_professional_certificate,
+        usage_terms: values.usage_terms,
+      },
+    };
+    setLoad(true);
+    await api
+      .post(`/auth/signup/medic`, data)
+      .then((e) => {
+        toast({
+          title: "Sucesso!",
+          description:
+            "Seu cadastro foi recebido, iremos enviar um e-mail para confirmação",
+          icon: "sucess",
+        });
 
-
-    await api.post(`/auth/signup/medic`, data).then(e => {
-      toast({
-        title: "Sucesso!",
-        description:
-          "Seu cadastro foi recebido, iremos enviar um e-mail para confirmação",
-        icon: "sucess",
+        return setTimeout(() => handleUseSelectedTab(2), 1000);
+      })
+      .catch((e) => {
+        toast({
+          title: "Erro!",
+          description: "Algo deu errado, por gentileza, tente mais tarde.",
+          icon: "alert",
+        });
+        setLoad(false);
+        return;
       });
-
-      return setTimeout(() => handleUseSelectedTab(2), 1000);
-    }).catch(e => {
-      toast({
-        title: "Erro!",
-        description:
-          "Algo deu errado, por gentileza, tente mais tarde.",
-        icon: "alert",
-      });
-
-      return 
-    })
   };
 
   return (
-    <>
+    <div>
       <CardContent className="grid gap-2 py-2">
         <div>
           <Form {...form}>
@@ -186,7 +208,7 @@ export function MedicoSignup({ handleUseSelectedTab }: Props) {
                   <InputDocForm
                     label={"Foto de Perfil"}
                     formControl={form.control}
-                    name={"picture_url"}
+                    name={"picture"}
                     accept="image/*"
                   />
                 </div>
@@ -213,24 +235,28 @@ export function MedicoSignup({ handleUseSelectedTab }: Props) {
                     name={"usage_terms"}
                     className="flex py-2 items-center gap-2"
                     label={
-                      <>
+                      <div>
                         Estou ciente e concordo com os{" "}
                         <Link href={"/"} className="underline">
                           Termos de Uso
                         </Link>
                         .
-                      </>
+                      </div>
                     }
                   />
                 </div>
 
-                <Button className="w-full" type="submit">
-                  Cadastrar
+                <Button className="w-full" disabled={load} type="submit">
+                  {load ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    "Cadastrar"
+                  )}
                 </Button>
                 <Button
                   variant={"outline"}
                   className="mt-2 w-full"
-                  onClick={() => route.back()}
+                  onClick={() => route.replace("/auth/signin")}
                 >
                   Voltar
                 </Button>
@@ -239,6 +265,6 @@ export function MedicoSignup({ handleUseSelectedTab }: Props) {
           </Form>
         </div>
       </CardContent>
-    </>
+    </div>
   );
 }

@@ -12,17 +12,18 @@ import axios from "axios";
 import { useSignin } from "@/hook/useSignin";
 import { HomeMedico } from "@/components/pages/HomeMedico";
 import { HomeEstudante } from "@/components/pages/HomeEstudante";
+import Head from "next/head";
 
-export default function Signin(params:any) {
+export default function Home(params:any) {
   const { user } = useSignin()
 
   console.log(user)
   return (
-    <>
+    <div>
     {
-      user?.userType == 'medico' ?
-      (<HomeMedico />) : (<HomeEstudante />)
+      user?.scope == 'medic' ?
+      (<HomeMedico />) : (<div> teste</div>)
     }
-    </>
+    </div>
   );
 }

@@ -22,18 +22,21 @@ import { useState } from "react";
 import { Badge } from "../ui/badge";
 
 interface OptionsProps {
-  value: string;
-  label: string;
+  value: string | any;
+  label: string | any;
 }
 
 interface Props {
   formControl: any;
   name: string;
   label?: string;
-  itens: OptionsProps[];
+  itens?: OptionsProps[];
   placeholder?: string;
   description?: string;
   className?: string;
+  maxItens?: number;
+  maxItensLabel?: boolean;
+  badgeType?: 'destructive'
 }
 export const InputMultiSelectForm = ({
   formControl,
@@ -43,6 +46,9 @@ export const InputMultiSelectForm = ({
   placeholder,
   description,
   className,
+  maxItens,
+  maxItensLabel,
+  badgeType
 }: Props) => {
   const [open, setOpen] = useState(false);
 
@@ -62,7 +68,7 @@ export const InputMultiSelectForm = ({
           <FormItem className={cn(className, 'h-full')}>
             {label && (
               <FormLabel htmlFor={name} className="p-0 m-0">
-                {label}
+                {label} {maxItensLabel && `(${field.value ? field.value.length : 0}/${maxItens})`}
               </FormLabel>
             )}
 
@@ -80,8 +86,9 @@ export const InputMultiSelectForm = ({
                   <div className="max-w-[80%] flex flex-wrap gap-2">
                     {field.value?.length > 0 ? (
                       field.value?.map((value: any) => {
+    
                         return (
-                          <Badge key={value.value} className="mr-1">
+                          <Badge variant={badgeType} key={value.value} className="mr-1">
                             {value.label}
                           </Badge>
                         );
@@ -103,10 +110,11 @@ export const InputMultiSelectForm = ({
                   <CommandInput placeholder={`Procure por ${placeholder}`} />
                   <CommandEmpty>Não há opções.</CommandEmpty>
                   <CommandGroup>
-                    {itens.map((framework) => (
+                    {itens?.map((framework) => (
                       <CommandItem
                         key={framework.label}
                         onSelect={(currentValueLow) => {
+                          console.log('ta aqui o valor', currentValueLow)
                           const currentValue =
                             currentValueLow.toLocaleUpperCase();
                           const validacao = field?.value
@@ -116,6 +124,8 @@ export const InputMultiSelectForm = ({
                               )
                             : null;
 
+                          
+
                           if (validacao) {
                             const newValues = field.value?.filter(
                               (el: any) =>
@@ -124,6 +134,13 @@ export const InputMultiSelectForm = ({
 
                             field.onChange(newValues);
                           } else {
+                            
+                            if(maxItens){
+                              if(field?.value?.length >= maxItens){
+                                return
+                              }
+                            }
+
                             const objSelecionado = itens.find(
                               (arr) =>
                                 arr.label.toLocaleUpperCase() == currentValue

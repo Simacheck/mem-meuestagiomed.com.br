@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -22,7 +23,7 @@ export default function NewSteps() {
 
   useEffect(() => {
     handleUseSelectedTab(tela);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [tela]);
 
   function handleUseSelectedTab(number: number) {
@@ -62,8 +63,8 @@ export default function NewSteps() {
   const [selectedTab, setSelectedTab] = useState(allSteps[0]);
 
   return (
-    <>
-      <>
+    <div>
+      <div>
         <ol className="flex w-full px-3 justify-around items-center font-medium text-center text-gray-500">
           {allSteps.map((item) => (
             <li
@@ -93,7 +94,7 @@ export default function NewSteps() {
             </li>
           ))}
         </ol>
-      </>
+      </div>
       <main>
         <AnimatePresence>
           <motion.div
@@ -107,6 +108,6 @@ export default function NewSteps() {
           </motion.div>
         </AnimatePresence>
       </main>
-    </>
+    </div>
   );
 }

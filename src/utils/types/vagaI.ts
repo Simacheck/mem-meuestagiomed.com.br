@@ -1,45 +1,5 @@
 import { boolean } from "zod";
 
-export interface VagaI {
-  id: string;
-  area: string;
-  time: string;
-  cidade: string;
-  type: string;
-  estado: string;
-  bairro: string;
-  semestreMin: string;
-  dataFinalInscricao: string;
-  initialDate: string;
-  finishDate: string;
-  descricao: string;
-  infoMedico?: InfoMedicoI;
-  atividades?: string[];
-  requisitos?: string[];
-  inscricoesStatus: string;
-}
-export interface InfoMedicoI {
-  qtdeInscritos: number;
-  status: boolean;
-  inscritos: InscritoI[];
-  selecionado?: InscritoI;
-  situacao: string;
-}
-
-export interface InscritoI {
-  id: number;
-  nome: string;
-  faculdade: string;
-  periodo: string;
-  currículo: string;
-  discricao: string;
-  cidade: string;
-  areas: string[];
-  celular?: string;
-  email?: string;
-  status?: string;
-}
-
 export interface FileRequestI {
   content: string;
   type: string;
@@ -85,11 +45,29 @@ export interface SpecialityI {
   is_active?: boolean;
 }
 
+export interface ModalitysI {
+  id?: string;
+  name?: string;
+  is_active?: boolean;
+}
+
+export interface TypesI {
+  id?: string;
+  name?: string;
+  is_active?: boolean;
+}
+
+export interface ApplicationsI {
+  id: string;
+  status: 'active' | 'closed' | 'selected' | 'canceled';
+  student: StudentI
+}
+
 export interface LocationsI {
   id?: string;
   name?: string;
   description?: string;
-  type?: string;
+  location_type?: string;
   modality?: string;
   picture_url?: string;
   is_active?: boolean;
@@ -119,7 +97,7 @@ export interface MedicI {
   fk_university_residency?: string;
   university_residency?: UniversityI;
   specialities?: SpecialityI[];
-  locations?: LocationsI[];
+  locations: LocationsI[];
   openings?: any
 }
 
@@ -141,8 +119,7 @@ export interface StudentI {
   fk_university?: string;
   university?: UniversityI;
   specialities?: SpecialityI[];
-  locations?: LocationsI[];
-  curriculums?: any[];
+  curriculums?: CurriculumObj[];
   openings?: any
 }
 
@@ -151,7 +128,7 @@ export interface OpeningI {
   name?: string;
   description?: string;
   short_description?: string;
-  status?: string;
+  status?: 'active' | 'closed' | 'finished' | 'canceled';
   total_hours?: number;
   school_term_min?: number;
   school_term_max?: number;
@@ -161,6 +138,7 @@ export interface OpeningI {
   is_active?: boolean;
   activities?: ActivityI[];
   students?: StudentI[];
+  applications: ApplicationsI[];
   fk_speciality?: string;
   speciality?: SpecialityI;
   fk_medic?: string;

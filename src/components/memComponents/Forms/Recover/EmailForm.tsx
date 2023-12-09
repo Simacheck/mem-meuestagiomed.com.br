@@ -36,9 +36,9 @@ export function RecoverEmailForm({ handleChangeEtapa }: Props) {
   const onSubmit = async (values: ValuesI) => {
     console.log(values);
     setLoading(true);
-    setTimeout(() => handleChangeEtapa(values.email), 2000)
+    setTimeout(() => handleChangeEtapa(values.email), 2000);
     /*await api
-      .post(`/auth/forgot/`, values)
+      .post(`/password/forgot/`, values)
       .then((e) => {
        
         return handleChangeEtapa(values.email);
@@ -52,34 +52,30 @@ export function RecoverEmailForm({ handleChangeEtapa }: Props) {
   };
 
   return (
-    <>
-      <CardContent className="grid py-1">
-        <div>
-          <CardDescription>Preencha os dados abaixo:</CardDescription>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="w-full flex-col"
-            >
-              <InputForm
-                formControl={form.control}
-                type={"email"}
-                className="mb-4"
-                placeholder={"Email de Cadastro"}
-                name="email"
-              />
-              <Button className="w-full " disabled={loading}>
-                Próximo
-                {loading && (
-                  <Loader2 className="mr-2 ml-4 h-4 w-4 animate-spin" />
-                )}
-              </Button>
-            </form>
-          </Form>
-        </div>
-
-        
-      </CardContent>
-    </>
+    <CardContent className="grid py-1">
+      <div>
+        <CardDescription>Preencha os dados abaixo:</CardDescription>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full flex-col"
+          >
+            <InputForm
+              formControl={form.control}
+              type={"email"}
+              className="mb-4"
+              placeholder={"Email de Cadastro"}
+              name="email"
+            />
+            <Button className="w-full " disabled={loading}>
+              Próximo
+              {loading && (
+                <Loader2 className="mr-2 ml-4 h-4 w-4 animate-spin" />
+              )}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </CardContent>
   );
 }

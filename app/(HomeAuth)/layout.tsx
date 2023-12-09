@@ -17,7 +17,7 @@ import { Toaster } from '@/components/ui/toaster'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  description: "Seu Estágio Med",
+  title: "Aplicativo | Seu Estágio Med",
   icons: '../favicon.ico'
 };
 

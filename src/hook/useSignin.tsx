@@ -1,153 +1,147 @@
-'use client'
+"use client";
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { api } from "@/utils/services";
 import { useRouter } from "next/navigation";
-import { setCookie, getCookie, deleteCookie } from 'cookies-next';
-import { usePathname } from 'next/navigation';
+import { setCookie, getCookie, deleteCookie } from "cookies-next";
+import { usePathname } from "next/navigation";
 import { DeleteCookies } from "@/utils/teste";
+import { MedicI, StudentI } from "@/utils/types/vagaI";
+import { toast } from "@/components/ui/use-toast";
+import { redirect } from "next/navigation";
+import axios from "axios";
 
 interface providerProps {
-    children: ReactNode
+  children: ReactNode;
 }
 
 interface credentialProps {
-    email: string;
-    password?: string;
-    type?: string
+  email: string;
+  password?: string;
+  type?: string;
 }
 
-export interface userProps {
-    name: string,
-    email: string,
-    userType: string,
-    AcessToken: string,
-    RefreshToken: string,
-    IdToken: string
+interface userProps extends MedicI, StudentI {
+  scope: "medic" | "student";
 }
 
 interface contextProps {
-    signIn(credentials: credentialProps): Promise<void>;
-    route: any;
-    loading: boolean;
-    isAthenticated: boolean;
-    user: userProps | undefined;
-    signOut: () => void;
+  signIn(credentials: credentialProps): Promise<void>;
+  route: any;
+  loading: boolean;
+  user: userProps | undefined;
+  signOut: () => void;
 }
 
 const SigninContext = createContext({} as contextProps);
 
 export function SigninProvider({ children }: providerProps) {
-    const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState<userProps>();
-    const isAthenticated = !!user;
-    const route = useRouter()
-    const pathname = usePathname()
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<userProps>();
+  const route = useRouter();
+  const pathname = usePathname();
 
-    useEffect(() => {
-        const token = getCookie('mem.accessToken');
+  async function getMe() {
+    await api
+      .get("/me")
+      .then((resp) => {
+        setUser(resp.data);
+      })
+      .catch((e) => {
+        console.log("erro aq", e);
+        //return signOut();
+      });
+    return;
+  }
 
-        if (token != undefined) {
-            api.get("/user/me")
-                .then((resp) => {
-                    console.log(resp.data);
-                    const {
-                        name,
-                        email,
-                        userType,
-                        AcessToken,
-                        RefreshToken,
-                        IdToken
-                    } = resp.data;
+  useEffect(() => {
+    const token = getCookie("mem.accessToken");
 
-                    setUser({
-                        name,
-                        email,
-                        userType,
-                        AcessToken,
-                        RefreshToken,
-                        IdToken
-                    });
-                })
-                .catch(() => {
-                    signOut();
-                });
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pathname]);
-
-    async function signIn({ email, password }: credentialProps) {
-        setLoading(true);
-
-        await api
-            .post("/login", {
-                email: email,
-                password: password,
-            })
-            .then((resp) => {
-
-                console.log(resp)
-                const { AccessToken, IdToken, RefreshToken } = resp.data;
-
-                setCookie('mem.idToken', IdToken)
-                setCookie('mem.accessToken', AccessToken)
-                setCookie('mem.refreshToken', RefreshToken)
-
-                api.defaults.headers.common["Authorization"] = IdToken;
-                api.defaults.headers.common["AccessToken"] = AccessToken;
-
-                return route.replace('/app')
-            })
-            .catch(() => {
-
-                return console.log('error')
-            });
-        setLoading(false);
+    if (token != undefined) {
+        setTimeout(() => getMe(), 2000);
     }
 
-    async function signOut() {
-        const refreshToken = getCookie('mem.refreshToken');
-        console.log('ta entrando no signout', refreshToken)
-    
-        if(refreshToken){
+  }, [pathname]);
 
-            await DeleteCookies('mem.idToken')
-            await DeleteCookies('mem.accessToken')
-            await DeleteCookies('mem.refreshToken')
+  async function signIn({ email, password }: credentialProps) {
+    setLoading(true);
 
+    await api
+      .post("/auth/signin", {
+        email: email,
+        password: password,
+      })
+      .then((resp) => {
+        console.log(resp);
+        const { AccessToken, RefreshToken, IdToken } = resp.data;
 
-            await api
-                .post("/auth/logout", {
-                    RefreshToken: refreshToken,
-                })
-                
-            
-            console.log('passou da info')
-            return route.replace('/')
-        }
+        setCookie("mem.accessToken", AccessToken);
+        setCookie("mem.refreshToken", RefreshToken);
+        setCookie("mem.idToken", IdToken);
 
-        return
+        api.defaults.headers.common["Authorization"] = IdToken;
+        api.defaults.headers.common["AccessToken"] = AccessToken;
+
+        return setTimeout(() => route.replace("/app"), 3000);
+      })
+      .catch((e) => {
+        setLoading(false)
+        
+        if(e.response?.status === 404){
+          return toast({
+            title: "Email ou senha incorreto!",
+            description: "Revise-os e tente novamente!",
+            icon: "alert",
+          });
+        } 
+        return toast({
+          title: "Erro!",
+          description: "Algo deu errado, tente novamente mais tarde!",
+          icon: "alert",
+        });
+      });
+  }
+
+  async function signOut() {
+    const accessToken = getCookie("mem.accessToken");
+
+    if (accessToken) {
+      await DeleteCookies("mem.accessToken");
+      await DeleteCookies("mem.refreshToken");
+      await DeleteCookies("mem.idToken");
+
+      await api
+        .post("/auth/logout")
+        .then((e) => redirect("/"))
+        .catch((e) => console.log(e));
     }
 
-    return (
-        <SigninContext.Provider
-            value={{
-                signIn,
-                signOut,
-                route,
-                loading,
-                isAthenticated,
-                user,
-            }}
-        >
-            {children}
-        </SigninContext.Provider>
-    );
+    return;
+  }
+
+  return (
+    <SigninContext.Provider
+      value={{
+        signIn,
+        signOut,
+        route,
+        loading,
+        user,
+      }}
+    >
+      {children}
+    </SigninContext.Provider>
+  );
 }
 
 export function useSignin() {
-    const context = useContext(SigninContext);
+  const context = useContext(SigninContext);
 
-    return context
+  return context;
 }
-

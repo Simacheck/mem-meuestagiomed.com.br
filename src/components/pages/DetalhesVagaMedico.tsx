@@ -10,41 +10,59 @@ import {
 } from "../ui/table";
 import { FileDown } from "lucide-react";
 import { ModalDetalhesEstudante } from "../memComponents/ModalDetalhesEstudante";
-import { InfoMedicoI } from "@/utils/types/vagaI";
+import {  OpeningI } from "@/utils/types/vagaI";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 interface props {
-  details?: InfoMedicoI;
-  idVaga?: string;
-  statusInscricoes?: string;
+  details?: OpeningI;
 }
 
-export const DetalhesMedico = ({
-  details,
-  idVaga,
-  statusInscricoes,
-}: props) => {
+export const DetalhesMedico = ({ details }: props) => {
   const route = useRouter();
-  const statusGeral = details?.inscritos.filter((est) => est.status);
   const [send, setSend] = useState(false);
 
+  const selecionado = details?.applications?.find(aplic => aplic.status == 'selected')
+  console.log( details?.applications)
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col flex-wrap justify-around md:justify-start gap-2 p-2 my-2">
       <div className="flex justify-between items-center">
         <h2 className="text-xl">Inscrições:</h2>
-        {details?.situacao != "finalizado" && (
-          <Button variant={"outline"} onClick={() => route.refresh()}>
-            {statusInscricoes == "aberto"
-              ? "Fechar Inscrições"
-              : "Abrir Inscrições"}
-          </Button>
-        )}
+        {details?.status != "canceled" &&
+          (details?.status == "finished" ? (
+            <div> </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button variant={"outline"} onClick={() => route.refresh()}>
+                {details?.status == "active"
+                  ? "Fechar Inscrições"
+                  : "Abrir Inscrições"}
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-red-600 hover:bg-red-600/90">Cancelar Oportunidade</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Cancelar Oportunidade</DialogTitle>
+                    <DialogDescription>
+                      Você tem certeza que deseja cancelar esta oportunidade?
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <DialogFooter>
+                    <Button type="submit">Confirmar</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          ))}
       </div>
 
-      {details?.selecionado && (
+      {details?.status == 'finished' && selecionado && (
         <div className="py-4">
           <div>
             <h2 className="text-md">Selecionado:</h2>
@@ -60,16 +78,16 @@ export const DetalhesMedico = ({
             </div>
             <div className="test text-sm max-w-[80%] text-center">
               <p className="py-2">
-                {details.selecionado.nome}, para esta experiência.
+                {selecionado.student.name}, para esta experiência.
               </p>
               <p className="py-2">
                 Para maiores informações, verifique as informações pessoais do
                 estudante abaixo:
               </p>
               <ModalDetalhesEstudante
-                idVaga={idVaga}
-                estudante={details.selecionado}
-                oportunidadeAberta={statusGeral && statusGeral?.length > 0}
+                idVaga={details.id}
+                aplication={selecionado}
+                oportunidadeAberta={details.status != 'finished'}
                 sendState={send}
                 setSendState={setSend}
               />
@@ -82,12 +100,12 @@ export const DetalhesMedico = ({
           </div>
         </div>
       )}
-      {details?.situacao !== "aberto" ? (
-        <>
+      { (details?.applications && details?.applications?.length > 0) ? (
+        <div>
           <div className="flex flex-wrap w-full items-center gap-4">
             <div>
               <h3 className="text-sm">
-                Qtde Total de Inscritos: {details?.inscritos?.length}
+                Qtde Total de Inscritos: {details.applications.length}
               </h3>
             </div>
           </div>
@@ -108,19 +126,17 @@ export const DetalhesMedico = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {details?.inscritos.map((estudante, idx) => (
-                  <TableRow key={idx}>
+                {details?.applications.map((aplicacao, idx) => (
+                  <TableRow key={idx} >
                     <TableCell className="font-medium">{idx + 1}</TableCell>
-                    <TableCell className="flex items-center gap-2">
-                      {estudante.nome}{" "}
-                      {statusGeral && estudante.status == "selecionado" ? (
+                    <TableCell className=" ">
+                      {aplicacao.student.name}{" "} 
+                      {details.status == 'finished' && aplicacao.status == "selected" && (
                         <Badge>Selecionado</Badge>
-                      ) : (
-                        <Badge variant={"outline"}>Não Selecionado</Badge>
-                      )}
+                      ) }
                     </TableCell>
-                    <TableCell>{estudante.faculdade}</TableCell>
-                    <TableCell>{estudante.periodo}º Periodo</TableCell>
+                    <TableCell>{aplicacao.student.university?.name}</TableCell>
+                    <TableCell>{aplicacao.student.school_term}º Periodo</TableCell>
                     <TableCell>
                       <Button variant={"outline"}>
                         <FileDown />
@@ -128,26 +144,25 @@ export const DetalhesMedico = ({
                     </TableCell>
                     <TableCell>
                       <ModalDetalhesEstudante
-                        idVaga={idVaga}
-                        estudante={estudante}
+                        idVaga={details.id}
+                        aplication={aplicacao}
                         oportunidadeAberta={
-                          statusGeral && statusGeral?.length > 0
+                          details.status == 'active'
                         }
                         sendState={send}
                         setSendState={setSend}
                       />
                     </TableCell>
                   </TableRow>
-                ))}
+                      ))}
               </TableBody>
             </Table>
           </div>
-        </>
+        </div>
       ) : (
         <div className="w-full h-[10rem] flex justify-center items-center">
           <h3>
-            As inscrições irão começar após a confirmação do estágio pela equipe
-            MEM.
+            Ainda não há inscritos.
           </h3>
         </div>
       )}

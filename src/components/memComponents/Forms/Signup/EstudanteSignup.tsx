@@ -17,9 +17,15 @@ import { useRouter } from "next/navigation";
 import { InputDateFormTwo } from "../../InputDateForm";
 import "../../../react-datepicker.css";
 import { InputDocForm } from "../../InputDocForm";
-import { parseISO, sub } from "date-fns";
+import { formatISO, parseISO, sub } from "date-fns";
 import { api } from "@/utils/services";
 import { FileRequestI } from "@/utils/types/vagaI";
+import { Semestres } from "@/utils/options";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
+const REG_Mai = /(?=^.{8,}$)((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/g;
+
 
 const formSchema = z
   .object({
@@ -36,20 +42,35 @@ const formSchema = z
         message: "É necessário ser maior de 18 anos",
       }),
     tax_document: z.string({ required_error: "É necessário um CPF" }),
-    picture_url: z.object({ 
-      type: z.string({ required_error: "É necessário uma foto de perfil"  }),
-      content: z.string({ required_error: "É necessário uma foto de perfil"  }),
-    }),
-    enrollment_certificate_url: z.object({
-      type: z.string({ required_error: "É necessário uma foto de perfil"  }),
-      content: z.string({ required_error: "É necessário uma foto de perfil"  }),
-    }),
+    picture: z.object(
+      {
+        type: z.string({ required_error: "É necessário uma foto de perfil" }),
+        content: z.string({
+          required_error: "É necessário uma foto de perfil",
+        }),
+      },
+      { required_error: "É necessário uma foto de perfil" }
+    ),
+    enrollment_certificate: z.object(
+      {
+        type: z.string({
+          required_error: "É necessário um comprovante de matrícula",
+        }),
+        content: z.string({
+          required_error: "É necessário um comprovante de matrícula",
+        }),
+      },
+      { required_error: "É necessário um comprovante de matrícula" }
+    ),
     school_term: z.string({
       required_error: "É necessário selecionar uma Universidade",
     }),
     password: z
       .string({ required_error: "É necessário uma senha" })
-      .min(8, { message: "Sua senha é muito curta" }),
+      .min(8, { message: "Sua senha é muito curta" })
+      .regex(new RegExp(REG_Mai), {
+        message: "A senha deve conter pelo menos um caractere maiúsculo",
+      }),
     confirmPassword: z
       .string({ required_error: "É necessário uma senha" })
       .min(8, { message: "Sua senha é muito curta" }),
@@ -62,15 +83,14 @@ const formSchema = z
     message: "As senhas não combinam",
   });
 
-
 interface ValuesProps {
   name: string;
   email: string;
-  phone_number: string; 
+  phone_number: string;
   birthdate: Date;
   tax_document: string;
-  picture_url: FileRequestI;
-  enrollment_certificate_url: FileRequestI;
+  picture: FileRequestI;
+  enrollment_certificate: FileRequestI;
   school_term: string;
   password: string;
   usage_terms: boolean;
@@ -83,24 +103,29 @@ interface Props {
 export function EstudanteSignup({ handleUseSelectedTab }: Props) {
   const { toast } = useToast();
   const route = useRouter();
+  const [load, setLoad] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   const onSubmit = async (values: ValuesProps) => {
     const data = {
-      name: values.name,
       email: values.email,
-      phone_number: values.phone_number, 
-      birthdate: values.birthdate.toDateString(),
-      tax_document: values.tax_document,
-      picture_url: values.picture_url,
-      enrollment_certificate_url: values.enrollment_certificate_url,
-      school_term: values.school_term,
       password: values.password,
-      usage_terms: values.usage_terms,
-    }
-    
+      details: {
+        name: values.name,
+        phone_number: values.phone_number,
+        birthdate: formatISO(values.birthdate),
+        tax_document: values.tax_document,
+        //picture: values.picture,
+        //enrollment_certificate: values.enrollment_certificate,
+        school_term: values.school_term,
+        usage_terms: values.usage_terms,
+      },
+    };
+
+    setLoad(true)
+
     await api
       .post(`/auth/signup/student`, data)
       .then((e) => {
@@ -116,17 +141,16 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
       .catch((e) => {
         toast({
           title: "Erro!",
-          description:
-            "Algo deu errado, por gentileza, tente mais tarde.",
+          description: "Algo deu errado, por gentileza, tente mais tarde.",
           icon: "alert",
         });
-
-        return 
+        setLoad(false)
+        return;
       });
   };
 
   return (
-    <>
+    <div>
       <CardContent className="grid gap-2 py-2">
         <div>
           <Form {...form}>
@@ -174,20 +198,11 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
 
                 <div className=" py-2 flex gap-2 w-full">
                   <InputSelectForm
-                    placeholder="Escolha sua faculdade "
+                    placeholder="Em qual período da faculdade está? "
                     formControl={form.control}
                     name={"school_term"}
                     className="w-full"
-                    itens={[
-                      {
-                        label: "Usp",
-                        value: "usp",
-                      },
-                      {
-                        label: "Unesp",
-                        value: "unesp",
-                      },
-                    ]}
+                    itens={Semestres}
                   />
                 </div>
 
@@ -195,7 +210,7 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
                   <InputDocForm
                     label={"Foto de Perfil"}
                     formControl={form.control}
-                    name={"picture_url"}
+                    name={"picture"}
                     accept="image/*"
                   />
                 </div>
@@ -204,7 +219,7 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
                   <InputDocForm
                     label={"Comprovante de Matrícula"}
                     formControl={form.control}
-                    name={"enrollment_certificate_url"}
+                    name={"enrollment_certificate"}
                     accept="image/*, application/pdf"
                   />
                 </div>
@@ -231,24 +246,24 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
                     name={"usage_terms"}
                     className="flex py-2 items-center gap-2"
                     label={
-                      <>
+                      <div>
                         Estou ciente e concordo com os{" "}
                         <Link href={"/"} className="underline">
                           Termos de Uso
                         </Link>
                         .
-                      </>
+                      </div>
                     }
                   />
                 </div>
 
-                <Button className="w-full" type="submit">
-                  Cadastrar
+                <Button className="w-full" disabled={load} type="submit">
+                  {load ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Cadastrar'}
                 </Button>
                 <Button
                   variant={"outline"}
                   className="mt-2 w-full"
-                  onClick={() => route.back()}
+                  onClick={() => route.replace('/auth/signin')}
                 >
                   Voltar
                 </Button>
@@ -257,6 +272,6 @@ export function EstudanteSignup({ handleUseSelectedTab }: Props) {
           </Form>
         </div>
       </CardContent>
-    </>
+    </div>
   );
 }

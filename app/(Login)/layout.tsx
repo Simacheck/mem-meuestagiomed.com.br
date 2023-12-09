@@ -13,10 +13,6 @@ import { SigninProvider } from '@/hook/useSignin'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  description: "Seu Estágio Med",
-  icons: '../favicon.ico'
-};
 
 export default function HomeRootLayout({
   children,

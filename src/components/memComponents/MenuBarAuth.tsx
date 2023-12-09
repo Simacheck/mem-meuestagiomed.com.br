@@ -14,13 +14,13 @@ export const AuthMenuBar = () => {
     return(
         <Menubar>
             <CentralizerContainer>
-              <>
+              <div>
                 <Image src="/logo-simples-azul.png" alt="logo" height={50} width={120} />
-              </>
+              </div>
               <div className="flex  items-center space-x-4">
                 <div className="hidden md:flex space-x-4">
    
-                  {user?.userType === 'medico' ?
+                  {user?.scope === 'medic' ?
                     (ManuItensAppMedico.map((item) => (
                       <Link
                         key={item.route}

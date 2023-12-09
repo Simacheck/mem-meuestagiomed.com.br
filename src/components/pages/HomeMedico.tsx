@@ -7,48 +7,20 @@ import { api } from "@/utils/services"
 import { Icons } from "../memComponents/Icons"
 import { differenceInDays, toDate } from "date-fns"
 import { useToast } from "../ui/use-toast"
-import { VagaI } from "@/utils/types/vagaI"
+import { OpeningI } from "@/utils/types/vagaI"
+import { useSignin } from "@/hook/useSignin"
 
 
 export const HomeMedico = () => {
-    const [allVagas, setAllVagas] = useState<VagaI[]>([])
-    const [confirmados, setConfirmados] = useState<VagaI[]>([])
-    const [aberto, setAberto] = useState<VagaI[]>([])
-    const [finalizado, setFinalizado] = useState<VagaI[]>([])
+    const { user } = useSignin()
+    const [allVagas, setAllVagas] = useState<OpeningI[]>([])
+    const [confirmados, setConfirmados] = useState<OpeningI[]>([])
+    const [aberto, setAberto] = useState<OpeningI[]>([])
+    const [finalizado, setFinalizado] = useState<OpeningI[]>([])
     const [load, setLoading] = useState(true)
     const { toast } = useToast();
     const [filters, setFilters] = useState({initial: null, finish: null, semestre: null})
 
-    async function getDados(user?: string) {
-      setAllVagas([])
-      setConfirmados([])
-      setAberto([])
-      setFinalizado([])
-        console.log(aberto)
-        await api.get('/vagas/all').then(r => {
-          const newAberto: VagaI[] = []
-          const newConfirmados: VagaI[] = []
-          const newFinalizados: VagaI[] = []
-
-          r.data.filter((x: VagaI) => {
-
-            if(x?.infoMedico?.situacao == 'aberto') {            
-              newAberto?.push(x)
-            } else if (x?.infoMedico?.situacao == 'confirmado' ){
-              newConfirmados?.push(x)
-            } else if (x?.infoMedico?.situacao == 'finalizado'){
-              newFinalizados?.push(x)
-            }
-          })
-
-          setAberto(newAberto)
-          setConfirmados(newConfirmados)
-          setFinalizado(newFinalizados)
-          setAllVagas(r.data)
-        })
-
-        return
-    }
 
     function handleInitial(e:any){
       setFilters({...filters, initial: e})
@@ -81,16 +53,16 @@ export const HomeMedico = () => {
     }
 
     useEffect(() => { 
-      setLoading(true)
-      getDados()
+      const openings = user?.openings
+      setAllVagas(openings)
       setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[load, filters])
+    },[])
     
-    return (
+
+   return (
       <CentralizerContainer outhers={"pt-[5.5rem] "}>
         <div className="w-full">
-          <h2 className="text-3xl">Painel:</h2>
 
           <div className=" rounded-lg border bg-card text-card-foreground shadow-sm flex  flex-wrap items-center justify-around md:justify-start gap-2 w-full p-2 my-2">
             <div>
@@ -117,7 +89,27 @@ export const HomeMedico = () => {
                 <Icons.spinner className="mr-2 h-12 w-12 animate-spin" />
               </div>
             </div>
-          ) : (
+          ) : 
+            (
+              allVagas.map((vaga, idx) => 
+              <EstagioCard
+                key={idx}
+                area={vaga?.speciality?.name}
+                time={vaga?.total_hours}
+                bairro={vaga?.location?.address?.neighbourhood}
+                cidade={vaga?.location?.address?.city}
+                estado={vaga?.location?.address?.federative_unit_st}
+                atividades={vaga?.activities}
+                id={vaga?.id}
+                semestreMin={vaga?.school_term_min}
+                initialDate={vaga.start_date ? new Date(vaga?.start_date) : 123}
+                finishDate={vaga.end_date ? new Date(vaga.end_date) : 123}
+                statusInscricao={vaga.status}
+                dueDate={vaga.due_date ? new Date(vaga.due_date) : 123}
+                userType={user?.scope}
+                />)
+            )
+          /*(
             <div>
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col flex-wrap justify-around md:justify-start gap-2 w-full p-2 my-2">
                 <InfoTextHover
@@ -241,8 +233,9 @@ export const HomeMedico = () => {
                 </div>
               </div>
             </div>
-          )}
+                  )*/}
+                  
         </div>
       </CentralizerContainer>
-    );
+    )
 }

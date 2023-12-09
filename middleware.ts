@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
     const url = request.nextUrl.pathname
     const auth = request.cookies.get('mem.accessToken')?.value
+    console.log('AUTH', auth)
     
     function containsAuth(str: string) {
         return str.indexOf("/auth/") !== -1;

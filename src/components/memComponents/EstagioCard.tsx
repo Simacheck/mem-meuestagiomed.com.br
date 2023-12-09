@@ -13,19 +13,24 @@ import {
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import format from "date-fns/format";
+import { ActivityI } from "@/utils/types/vagaI";
+import { differenceInDays, sub } from "date-fns";
 
 interface Props {
   situation?: "closed" | "maturity" | "selected" | "notSelected";
-  area: string;
-  time: string;
-  type: string;
-  semestreMin: string;
-  initialDate: number;
-  finishDate: number;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  statusInscricao: string;
+  area?: string;
+  time?: number;
+  atividades?: ActivityI[];
+  semestreMin?: number;
+  initialDate?: number | Date;
+  finishDate?: number | Date;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  statusInscricao?: string;
+  dueDate?: number | Date;
+  id?: string;
+  userType?: "medic" | "student";
 }
 
 export function EstagioCard({
@@ -35,14 +40,17 @@ export function EstagioCard({
   bairro,
   cidade,
   estado,
-  type,
+  atividades,
   semestreMin,
   initialDate,
   finishDate,
-  statusInscricao
+  statusInscricao,
+  dueDate,
+  id,
+  userType,
 }: Props) {
   const router = useRouter();
-
+  console.log('id', id);
   return (
     <Card
       className={cn(
@@ -67,17 +75,27 @@ export function EstagioCard({
           <p>Últimos dias para se inscrever!</p>
         </div>
       )}
-      {situation === "maturity" && (
-        <div className="w-full bg-red-100 h-[4rem] flex flex-col items-center justify-center">
-          <p className="font-bold">Inscreva-se já!</p>
-          <p>Últimos dias para se inscrever!</p>
-        </div>
-      )}
+      {situation == null &&
+        dueDate &&
+        differenceInDays(new Date(), sub(dueDate, { days: 14 })) >= 0 && (
+          <div className="w-full bg-red-100 h-[4rem] flex flex-col items-center justify-center">
+            {userType == "medic" ? (
+              <div>
+                <p className="font-bold">Últimos dias para inscrição!</p>
+              </div>
+            ) : (
+              <div>
+                <p className="font-bold">Inscreva-se já!</p>
+                <p>Últimos dias para se inscrever!</p>
+              </div>
+            )}
+          </div>
+        )}
       <CardHeader>
         <CardTitle>Estágio em {area}</CardTitle>
         <CardDescription className="flex gap-2">
           <Badge>{area}</Badge>
-          <Badge>{time}hrs</Badge>
+          <Badge>{time} hrs</Badge>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -93,7 +111,11 @@ export function EstagioCard({
           <div className="mb-1 items-start pb-2 last:mb-0 last:pb-0">
             <p className="text-sm font-bold leading-none">Tipo de Estágio</p>
             <div>
-              <p className="text-lg  text-muted-foreground">{type}</p>
+              {atividades?.map((x) => (
+                <Badge className={"my-1 mr-1"} variant={"outline"} key={x.id}>
+                  {x.name}
+                </Badge>
+              ))}
             </div>
           </div>
           <div className="mb-1 items-start pb-2 last:mb-0 last:pb-0">
@@ -109,7 +131,7 @@ export function EstagioCard({
               <p className="text-sm font-bold leading-none">De</p>
               <div>
                 <p className="text-lg  text-muted-foreground">
-                  {initialDate && format(initialDate, "d/MM/yyyy")}
+                  {initialDate && format(initialDate, "dd/MM/yyyy")}
                 </p>
               </div>
             </div>
@@ -117,16 +139,32 @@ export function EstagioCard({
               <p className="text-sm font-bold leading-none">Ate</p>
               <div>
                 <p className="text-lg  text-muted-foreground">
-                  {finishDate && format(finishDate, "d/MM/yyyy")}
+                  {finishDate && format(finishDate, "dd/MM/yyyy")}
                 </p>
               </div>
             </div>
           </div>
           <div className="flex flex-row mb-1 pb-2 ">
             <div className="w-[49%]">
-              <p className="text-sm font-bold leading-none">Inscrições:</p>
+              <p className="text-sm font-bold leading-none">
+                Status das Inscrições:
+              </p>
               <div>
-                <p className="text-lg  text-muted-foreground">{statusInscricao === 'aberto' ? <Badge>Abertas</Badge> : <Badge variant={'outline'}>Fechadas</Badge>}</p>
+               
+                  {statusInscricao === "active" ? (
+                    <Badge>Abertas</Badge>
+                  ) : (
+                    <Badge variant={"outline"}>Fechadas</Badge>
+                  )}
+           
+              </div>
+            </div>
+            <div className="w-[49%]">
+              <p className="text-sm font-bold leading-none">
+                Inscrições Até:
+              </p>
+              <div>
+              <Badge variant={'outline'}> {dueDate && format(dueDate, "dd/MM/yyyy")}</Badge>
               </div>
             </div>
           </div>
@@ -135,7 +173,7 @@ export function EstagioCard({
       <CardFooter>
         <Button
           className="w-full"
-          onClick={() => router.push("/app/oportunidade/endocrino")}
+          onClick={() => router.push(`/app/oportunidade/${id}`)}
         >
           Ver mais informações
         </Button>

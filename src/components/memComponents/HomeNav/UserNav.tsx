@@ -6,10 +6,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Separator } from "@/components/ui/separator";
 import { useSignin } from "@/hook/useSignin";
 import { ManuItensAppEstudante, ManuItensAppMedico } from "@/utils/menuitens";
+import { useRouter } from "next/navigation";
 
 
 export function UserNav() {
   const { user, signOut } = useSignin()
+  const router = useRouter()
 
   function getPrimeiraLetra(string:string | undefined) {
     if(string == undefined){
@@ -22,7 +24,7 @@ export function UserNav() {
     const palavras = string.split(" ");
   
     // Retorna um array com as primeiras letras das palavras
-    return palavras.map((palavra:string) => palavra[0].toLocaleLowerCase());
+    return palavras.map((palavra:string) => palavra[0].toLocaleUpperCase());
   }
 
   return (
@@ -45,10 +47,11 @@ export function UserNav() {
         </DropdownMenuLabel>
         <Separator />
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer hover:bg-gray-200">Perfil</DropdownMenuItem>
-          {user?.userType == 'medico' ?
+          <DropdownMenuItem className="cursor-pointer hover:bg-gray-200" onClick={() => router.replace(`/app/perfil`)}>Perfil</DropdownMenuItem>
+          {user?.scope == 'medic' ?
             (ManuItensAppMedico.map((item) => (
               <DropdownMenuItem
+              onClick={() => router.replace(`${item.route}`)}
               className="cursor-pointer hover:bg-gray-200"
               key={item.item}>
                 {item.item}
@@ -56,6 +59,7 @@ export function UserNav() {
             : (ManuItensAppEstudante.map((item) => (
             <DropdownMenuItem
               className="cursor-pointer hover:bg-gray-200"
+              onClick={() => router.replace(`${item.route}`)}
               key={item.item}>
                 {item.item}
               </DropdownMenuItem>)))

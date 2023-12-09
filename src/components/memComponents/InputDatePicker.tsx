@@ -11,7 +11,7 @@ import {
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DateRange } from "react-day-picker";
-import { addDays, format, toDate } from "date-fns";
+import { addDays, format, parseISO, parseJSON, toDate } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
@@ -36,12 +36,14 @@ export const InputSimpleDate = ({
   description,
   className,
 }: Props) => {
-  console.log(formControl)
+
   return (
     <FormField
       control={formControl}
       name={name}
-      render={({ field }) => (
+      render={({ field }) => {      
+        const tipo = typeof field.value
+        return(
         <FormItem className={className}>
           {label && <FormLabel htmlFor={name}>{label}</FormLabel>}
           <FormControl>
@@ -57,7 +59,7 @@ export const InputSimpleDate = ({
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {field.value ? (
-                      format(field.value, "dd/MM/yyyy")
+                      tipo === 'string' ? format(parseISO(field.value), "dd/MM/yyyy") : format(field.value, "dd/MM/yyyy")
                     ) : (
                       <span>{placeholder ? placeholder : 'Selecione'}</span>
                     )}
@@ -67,7 +69,7 @@ export const InputSimpleDate = ({
                   <Calendar
                     locale={ptBR}
                     mode="single"
-                    selected={toDate(field.value)}
+                    selected={toDate(parseISO(field.value))}
                     onSelect={(e) => field.onChange(e)}
                     initialFocus
                     className=" bg-white"
@@ -79,7 +81,7 @@ export const InputSimpleDate = ({
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
-      )}
+      )}}
     />
   );
 };
