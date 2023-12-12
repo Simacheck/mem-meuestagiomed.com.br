@@ -1,7 +1,8 @@
+'use client'
+
 import axios, { AxiosError } from "axios";
 import { getCookie, setCookie } from "cookies-next";
 import { signOut } from "./functions";
-import { headers } from "next/headers";
 
 let isRefreshing = false;
 let failedRequestQueue: {
@@ -23,25 +24,30 @@ export const api = axios.create({
     ? {
         Authorization: `${getCookie("mem.idToken")}`,
         AccessToken: `${getCookie("mem.accessToken")}`,
+        RefreshToken: `${getCookie("mem.refreshToken")}`,
       }
     : {},
 });
 
+
+
+
+
+
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("REFRESH TOKEN ATIVADO", error.response.data.Message, error);
-    if (error.response?.status == 401) {
-      let mensage = error.response.data.Message;
-      console.log(mensage !== "The password is incorrect");
-      const acessToken = getCookie("mem.accessToken");
-      const refreshToken = getCookie("mem.refreshToken");
+    console.log("REFRESH TOKEN ATIVADO", error);
 
+    if (error.response?.status == 401) {
+      let mensage = error.response.data.message;
+      
       if (
         mensage === "Access Token Expired" ||
         mensage === "The incoming token has expired"
       ) {
-        console.log("bateu aqui veio");
+        console.log("acess token expirado ou incomining token");
 
         const originalConfig = error.config;
 
@@ -49,30 +55,32 @@ api.interceptors.response.use(
           isRefreshing = true;
 
           await api
-            .post(
-              "/auth/refresh",
-              {},
-              {
-                headers: {
-                  RefreshToken: refreshToken,
-                  AcessToken: acessToken
-                },
-              }
-            )
+            .post("/auth/refresh")
             .then((response) => {
               const { AccessToken, IdToken } = response.data;
+
               console.log("refresh deu certo");
-              setCookie("simacheck.accessToken", AccessToken, {
+              
+
+              setCookie("mem.accessToken", AccessToken, {
                 maxAge: 60 * 60 * 24 * 30, // 30days
                 path: "/",
               });
 
-              api.defaults.headers.common["Authorization"] = IdToken;
-              api.defaults.headers.common["AccessToken"] = AccessToken;
+              setCookie("mem.idToken", IdToken, {
+                maxAge: 60 * 60 * 24 * 30, // 30days
+                path: "/",
+              });
 
+              
+              api.defaults.headers.common["Authorization"] = IdToken.toString();
+              api.defaults.headers.common["AccessToken"] = AccessToken.toString();
+              
+              console.log('api é essa', IdToken , api.defaults.headers)
+              
               let data = { IdToken, AccessToken };
 
-              failedRequestQueue.forEach((request) => request.onSucess(data));
+              setTimeout(() => failedRequestQueue.forEach((request) => request.onSucess(data)), 1000)
             })
             .catch((err) => {
               failedRequestQueue.forEach((request) => request.onFail(err));
@@ -80,7 +88,6 @@ api.interceptors.response.use(
 
               if (process.browser) {
                 signOut();
-                console.log("refresh deu errado");
               }
             })
             .finally(() => {
@@ -101,55 +108,9 @@ api.interceptors.response.use(
             },
           });
         });
-      } else if (!mensage || mensage !== "The password is incorrect") {
-        console.log(
-          "tem que cair aqui quando for 401 e nao for esqueci a senha"
-        );
+      } else if (mensage !== "The password is incorrect") {
+
         signOut();
-      }
-
-      //apagar depois
-      if (!isRefreshing) {
-        isRefreshing = true;
-
-        await api
-          .post(
-            "/auth/refresh",
-            {},
-            {
-              headers: {
-                RefreshToken: refreshToken,
-                AcessToken: acessToken
-              },
-            }
-          )
-          .then((response) => {
-            const { AccessToken, IdToken } = response.data;
-            console.log("refresh deu certo");
-            setCookie("simacheck.accessToken", AccessToken, {
-              maxAge: 60 * 60 * 24 * 30, // 30days
-              path: "/",
-            });
-
-            api.defaults.headers.common["Authorization"] = IdToken;
-            api.defaults.headers.common["AccessToken"] = AccessToken;
-
-            let data = { IdToken, AccessToken };
-
-            failedRequestQueue.forEach((request) => request.onSucess(data));
-          })
-          .catch((err) => {
-            failedRequestQueue.forEach((request) => request.onFail(err));
-            failedRequestQueue = [];
-
-            if (process.browser) {
-              signOut();
-              console.log("refresh deu errado");
-            }
-          })
-          .finally(() => {
-            isRefreshing = false;
-          });
       }
     }
 

@@ -55,7 +55,7 @@ export function SigninProvider({ children }: providerProps) {
       })
       .catch((e) => {
         console.log("erro aq", e);
-        //return signOut();
+        return signOut();
       });
     return;
   }
@@ -67,6 +67,7 @@ export function SigninProvider({ children }: providerProps) {
         setTimeout(() => getMe(), 2000);
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   async function signIn({ email, password }: credentialProps) {
@@ -81,12 +82,24 @@ export function SigninProvider({ children }: providerProps) {
         console.log(resp);
         const { AccessToken, RefreshToken, IdToken } = resp.data;
 
-        setCookie("mem.accessToken", AccessToken);
-        setCookie("mem.refreshToken", RefreshToken);
-        setCookie("mem.idToken", IdToken);
+        setCookie("mem.accessToken", AccessToken, {
+          maxAge: 60 * 60 * 24 * 30, // 30days
+          path: "/",
+        });
+
+        setCookie("mem.idToken", IdToken, {
+          maxAge: 60 * 60 * 24 * 30, // 30days
+          path: "/",
+        });
+        setCookie("mem.refreshToken", RefreshToken, {
+          maxAge: 60 * 60 * 24 * 30, // 30days
+          path: "/",
+        });
+      
 
         api.defaults.headers.common["Authorization"] = IdToken;
         api.defaults.headers.common["AccessToken"] = AccessToken;
+        api.defaults.headers.common["RefreshToken"] = RefreshToken;
 
         return setTimeout(() => route.replace("/app"), 3000);
       })

@@ -7,7 +7,7 @@ import { TextInput } from "../../TextInput";
 import { InputForm } from "../../InputForm";
 import { InputSelectForm } from "../../InputSelectForm";
 import { InputSimpleDate } from "../../InputDatePicker";
-import {  Estados,  Semestres } from "@/utils/options";
+import { Estados, Semestres } from "@/utils/options";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -77,7 +77,7 @@ const formSchema = z
         { required_error: "Selecione uma Especialidade" }
       )
       .array()
-      .transform((id) => id.map((x) => x.label)),
+      .transform((id) => id[0].label),
     activities: z
       .object(
         {
@@ -90,17 +90,17 @@ const formSchema = z
       .transform((id) => id.map((x) => x.label)),
     due_date: z.date({ required_error: "Data de vencimento é necessária" }).or(
       z.string({
-        required_error: "Data de vencimento é necessária" 
+        required_error: "Data de vencimento é necessária",
       })
     ),
     start_date: z.date({ required_error: "Data de início é necessário" }).or(
       z.string({
-        required_error: "Data de início é necessário" 
+        required_error: "Data de início é necessário",
       })
     ),
     end_date: z.date({ required_error: "Data de término é necessário" }).or(
       z.string({
-        required_error: "Data de término é necessário" 
+        required_error: "Data de término é necessário",
       })
     ),
     school_term_min: z
@@ -112,8 +112,9 @@ const formSchema = z
         {
           required_error: "Semetre Mínimo é necessário",
         }
-      ).array()
-      .transform((id) => id[0].label),
+      )
+      .array()
+      .transform((id) => Number(id[0].label)),
     school_term_max: z
       .object(
         {
@@ -123,8 +124,9 @@ const formSchema = z
         {
           required_error: "Semetre Máximo é necessário",
         }
-      ).array()
-      .transform((id) => id[0].label),
+      )
+      .array()
+      .transform((id) => Number(id[0].label)),
     total_hours: z
       .string({
         required_error: "Quantidade de horas é necessário",
@@ -132,10 +134,13 @@ const formSchema = z
       .transform((x) => Number(x)),
     description: z.string().optional().nullable(),
   })
-  .refine((data) => data.school_term_min <= data.school_term_max, {
-    path: ["school_term_max"],
-    message: "Semestre final não pode ser menor que semestre inicial.",
-  })
+  .refine(
+    (data) => Number(data.school_term_min) <= Number(data.school_term_max),
+    {
+      path: ["school_term_max"],
+      message: "Semestre final não pode ser menor que semestre inicial.",
+    }
+  )
   .refine((data) => data.end_date > data.start_date, {
     path: ["end_date"],
     message: "A data final não pode ser maior que a data inicial.",
@@ -163,25 +168,33 @@ export const OportunidadeForm = ({ initialValues }: Props) => {
     if (values) {
       console.log(values);
       setLoading(true);
-      return api.post("/opening", values).then((e) => {
-        toast({
-          title: "Sucesso!",
-          description:
-            "Excelente, a oportunidade foi editada! Você será redirecionado em 5 segundos",
-          icon: "sucess",
-        });
+      const obj = {
+        opening: {
+          ...values,
+          name: `Estágio em ${values.speciality}`
+        },
+      };
+      return api
+        .post("/opening", obj)
+        .then((e) => {
+          toast({
+            title: "Sucesso!",
+            description:
+              "Excelente, a oportunidade foi editada! Você será redirecionado em 5 segundos",
+            icon: "sucess",
+          });
 
-        return setTimeout(() => router.push("/app/"), 5000);
-      })
-      .catch((e) => {
-        toast({
-          title: "Erro!",
-          description: "Contate o suporte e tente novamente mais tarde!",
-          icon: "alert",
+          return setTimeout(() => router.push("/app/"), 5000);
+        })
+        .catch((e) => {
+          toast({
+            title: "Erro!",
+            description: "Contate o suporte e tente novamente mais tarde!",
+            icon: "alert",
+          });
+          setLoading(false);
+          // return setTimeout(() => router.push("/app/"), 5000);
         });
-
-        return setTimeout(() => router.push("/app/"), 5000);
-      });;
     }
     setLoading(true);
     const name = values.speciality[0];
@@ -211,10 +224,20 @@ export const OportunidadeForm = ({ initialValues }: Props) => {
   };
 
   async function getDados() {
-    await api.get("/location/defaults").then(e => {
-      setTypes(enumTypeObj(e.data.types))
-      setModalities(enumTypeObj(e.data.modalities))
-    }).catch()
+    await Promise.all([
+      api.get("/location/defaults").then((e) => {
+        setTypes(enumTypeObj(e.data.location_types));
+        setModalities(enumTypeObj(e.data.modalities));
+      }),
+      api.get("/activities").then((e) => {
+        console.log("ACTIVITES ");
+        setActivities(enumTypeObj(e.data));
+      }),
+      api.get("/specialities").then((e) => {
+        console.log("SPECIALITES ");
+        setSpecialities(enumTypeObj(e.data));
+      }),
+    ]);
   }
 
   useEffect(() => {

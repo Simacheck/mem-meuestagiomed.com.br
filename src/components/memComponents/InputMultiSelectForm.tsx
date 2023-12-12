@@ -114,7 +114,7 @@ export const InputMultiSelectForm = ({
                       <CommandItem
                         key={framework.label}
                         onSelect={(currentValueLow) => {
-                          console.log('ta aqui o valor', currentValueLow)
+                          console.log('ta aqui o valor', label,currentValueLow)
                           const currentValue =
                             currentValueLow.toLocaleUpperCase();
                           const validacao = field?.value

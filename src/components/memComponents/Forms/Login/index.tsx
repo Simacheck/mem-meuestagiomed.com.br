@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
 import { useSignin } from "@/hook/useSignin";
 import { Loader2 } from "lucide-react";
 
@@ -33,15 +32,13 @@ interface ValuesI {
 
 export function LoginForm() {
   const router = useRouter()
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
-    //resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
+    defaultValues:{email: '', password: ''}
   });
   const { signIn, loading } = useSignin()
 
   const onSubmit = async (values: ValuesI) => {
-    const {email, password} = values
-    console.log(values)
     signIn(values)
   };
 

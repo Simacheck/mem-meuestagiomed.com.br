@@ -41,6 +41,6 @@ interface AdaptadoI {
 export const enumTypeObj = (strings: string[]): TypesI[] => {
   const novoObj = strings.map((x, idx) => {return({id: idx.toString(), name: x})})
   
-  console.log(strings, novoObj)
+  console.log('abc', strings, novoObj)
   return novoObj
 }
